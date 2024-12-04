@@ -3,7 +3,9 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { LogoutButton } from "fablab-metrics/auth/LogoutButton";
 import { format } from "fablab-metrics/l10n";
+import { RefreshIcon } from "fablab-metrics/ui/icons/RefreshIcon";
 import { SettingsIcon } from "fablab-metrics/ui/icons/SettingsIcon";
+import { useRefresh } from "fablab-metrics/ui/useRefresh";
 import { useStatus } from "fablab-metrics/ui/useStatus";
 import React from "react";
 
@@ -30,6 +32,14 @@ function SettingsDialogContent({
   setIsOpen: (value: boolean) => void;
 }) {
   const status = useStatus();
+  const refresh = useRefresh();
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refresh();
+    setIsRefreshing(false);
+  };
 
   return (
     <Dialog open onClose={() => setIsOpen(false)} className="relative z-50">
@@ -39,14 +49,18 @@ function SettingsDialogContent({
           <DialogTitle className="font-bold">Aktualizace metrik</DialogTitle>
           <p>
             Poslední aktualizace:{" "}
-            {format(new Date(status.data?.date), "d. MMMM yyyy, HH:dd")}
+            {format(new Date(status.data?.date), "d. MMMM yyyy, HH:mm")}
           </p>
           <div className="flex justify-end">
             <button
-              onClick={() => setIsOpen(false)}
-              className="px-4 py-2 rounded bg-gray-100 "
+              onClick={() => handleRefresh()}
+              className="px-4 py-2 rounded bg-gray-100 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={isRefreshing}
             >
-              Aktualizovat
+              Aktualizovat{" "}
+              {isRefreshing && (
+                <RefreshIcon className="animate-spin h-8 w-8 p-2" />
+              )}
             </button>
           </div>
           <div className="pt-8 flex justify-between items-center gap-4">
