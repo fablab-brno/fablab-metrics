@@ -5,19 +5,17 @@ import { ResourceUsage } from "fablab-metrics/components/metrics/ResourceUsage";
 import { TotalMembersByPackage } from "fablab-metrics/components/metrics/TotalMembersByPackage";
 import { TrainingsByDate } from "fablab-metrics/components/metrics/TrainingsByDate";
 import { TrainingsByMember } from "fablab-metrics/components/metrics/TrainingsByMember";
+import { MembersWithoutPackage } from "fablab-metrics/ui/MembersWithoutPackage";
 import { SectionHeading } from "fablab-metrics/ui/SectionHeading";
 import { TrainingsByMemberInfoDialog } from "fablab-metrics/ui/TrainingsByMemberInfoDialog";
-import { useStatus } from "fablab-metrics/ui/useStatus";
 
 export default function Page() {
-  const status = useStatus();
-
   return (
     <main className="container mx-auto p-4">
       <SectionHeading>
         Počet členů{" "}
         <small className="font-normal text-xs">
-          ({status.members_without_package} členů nemělo nikdy aktivní členství)
+          (<MembersWithoutPackage /> členů nemělo nikdy aktivní členství)
         </small>
       </SectionHeading>
       <TotalMembersByPackage />

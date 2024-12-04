@@ -1,5 +1,5 @@
-import statusJson from "../../data/status.json";
+import useSWR from "swr";
 
 export function useStatus() {
-  return statusJson;
+  return useSWR("/api/status", (url) => fetch(url).then((res) => res.json()));
 }

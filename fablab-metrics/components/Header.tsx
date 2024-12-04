@@ -1,3 +1,5 @@
+"use client";
+
 import { LogoutButton } from "fablab-metrics/auth/LogoutButton";
 import { format } from "fablab-metrics/l10n";
 import { DateRangeDropdown } from "fablab-metrics/ui/DateRangeDropdown";
@@ -29,10 +31,13 @@ export function Header() {
           <DateZoomSelector />
           <DateRangeDropdown />
         </div>
-        <div className="flex items-center gap-4">
-          Aktualizace: {format(new Date(status.date), "d. MMMM yyyy, HH:dd")}
-          <LogoutButton />
-        </div>
+        {status.data != null && (
+          <div className="flex items-center gap-4">
+            Aktualizace:{" "}
+            {format(new Date(status.data?.date), "d. MMMM yyyy, HH:dd")}
+            <LogoutButton />
+          </div>
+        )}
       </div>
     </div>
   );
