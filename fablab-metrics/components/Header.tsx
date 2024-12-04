@@ -31,7 +31,7 @@ export function Header() {
           <DateZoomSelector />
           <DateRangeDropdown />
         </div>
-        {status.data != null && (
+        {status.data?.date != null && (
           <div className="flex items-center gap-4">
             Aktualizace:{" "}
             {format(new Date(status.data?.date), "d. MMMM yyyy, HH:dd")}
