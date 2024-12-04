@@ -1,8 +1,9 @@
+import { DATA_PATH } from "fablab-metrics/env";
 import fs from "node:fs/promises";
 import path from "node:path";
 
 export async function GET() {
-  const filename = path.join(process.cwd(), "data", "status.json");
+  const filename = path.join(DATA_PATH, "status.json");
 
   const data = await fs
     .readFile(filename, "utf8")

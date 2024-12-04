@@ -5,6 +5,7 @@ import {
   eachYearOfInterval,
   format,
 } from "date-fns";
+import { DATA_PATH } from "fablab-metrics/env";
 import { flatten } from "fablab-metrics/utils/array";
 import { type NextRequest } from "next/server";
 import fs from "node:fs/promises";
@@ -48,8 +49,7 @@ export async function GET(
   const data = await Promise.all(
     dateRange.map((date) => {
       const filename = path.join(
-        process.cwd(),
-        "data",
+        DATA_PATH,
         metric,
         granularity,
         `${format(date, datasetDataFormat)}.json`,
