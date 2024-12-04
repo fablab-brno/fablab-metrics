@@ -8,8 +8,7 @@ export function useRefresh() {
     onSuccess: () => {
       const pattern = new RegExp(/^\/api\//);
       return Promise.all(
-        cache
-          .keys()
+        Array.from(cache.keys())
           .filter((key: string) => pattern.test(key))
           .map((key: string) => mutate(key)),
       );
