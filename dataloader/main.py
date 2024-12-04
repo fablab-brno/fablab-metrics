@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from os import path
 
 from dateutil.relativedelta import relativedelta
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     with open(os.path.join(settings.data_path, "status.json"), "w") as jsonfile:
         json.dump(
             {
-                "date": datetime.now().isoformat(),
+                "date": datetime.now(timezone.utc).isoformat(),
                 **member_packages_status,
             },
             jsonfile,
