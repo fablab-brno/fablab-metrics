@@ -11,7 +11,7 @@ from settings import get_settings
 def get_db_connection():
     settings = get_settings()
 
-    if not os.path.exists(settings.db_path):
+    if not os.path.exists(os.path.dirname(settings.db_path)):
         os.makedirs(os.path.dirname(settings.db_path))
 
     sqlite3.register_adapter(datetime, adapt_datetime)
