@@ -41,12 +41,12 @@ def calculate_member_visits(date_window):
                 FROM (
                     SELECT 
                         rl.member_id,
-                        COUNT(*) AS num_visits
+                        COUNT(DISTINCT date(date_start)) AS num_visits
                     FROM 
                         resource_log as rl
                         LEFT JOIN resources as r ON r.id = rl.resource_id
                     WHERE 
-                        date(rl.date_start) >= :date_start AND date(rl.date_end) <= :date_end
+                        date(rl.date_start) >= :date_start AND date(rl.date_start) <= :date_end
                         AND r.type = 'entrance'
                     GROUP BY rl.member_id
                 )
