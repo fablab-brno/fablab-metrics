@@ -28,10 +28,6 @@ def calculate_trainings_by_date(date_window):
 
 
 def calculate_trainings_by_member(date_window):
-    bozp = [65, 2382]
-    basic = [20, 2384, 2383, 15, 22, 103]
-    advanced = [654, 151, 118, 1625, 2021, 2371, 2618]
-
     with get_db() as db:
         for date_start, date_end in date_window():
             one_res = db.execute(
@@ -39,9 +35,9 @@ def calculate_trainings_by_member(date_window):
                 SELECT COUNT(DISTINCT t.member_id)
                 FROM trainings AS t
                 LEFT JOIN training_courses AS tc ON tc.id = t.training_id
-                WHERE tc.category IS NOT NULL AND tc.category != '' AND t.training_id NOT IN ({','.join('?' * len(bozp))}) AND t.date <= ?
+                WHERE tc.category IS NOT NULL AND tc.category != '' AND tc.level IN ('basic', 'advanced') AND t.date <= ?
                 """,
-                [*bozp, date_end],
+                [date_end],
             )
             one_count = (one_res.fetchone() or [0])[0]
 
@@ -50,12 +46,13 @@ def calculate_trainings_by_member(date_window):
                 SELECT COUNT(*) FROM (
                     SELECT member_id, COUNT(DISTINCT t.training_id) as count
                     FROM trainings AS t
-                    WHERE t.training_id IN ({','.join('?' * len(bozp + basic))}) AND t.date <= ?
+                    LEFT JOIN training_courses AS tc ON tc.id = t.training_id
+                    WHERE tc.level IN ('bozp', 'basic') AND t.date <= ?
                     GROUP BY member_id
                     HAVING count >= 3
                 );
                 """,
-                [*(bozp + basic), date_end],
+                [date_end],
             )
             basic_count = (basic_res.fetchone() or [0])[0]
 
@@ -64,12 +61,13 @@ def calculate_trainings_by_member(date_window):
                 SELECT COUNT(*) FROM (
                     SELECT member_id, COUNT(DISTINCT t.training_id) as count
                     FROM trainings AS t
-                    WHERE t.training_id IN ({','.join('?' * len(bozp + advanced))}) AND t.date <= ?
+                    LEFT JOIN training_courses AS tc ON tc.id = t.training_id
+                    WHERE tc.level IN ('bozp', 'advanced') AND t.date <= ?
                     GROUP BY member_id
                     HAVING count >= 3
                 );
                 """,
-                [*(bozp + advanced), date_end],
+                [date_end],
             )
             advanced_count = (advanced_res.fetchone() or [0])[0]
 
