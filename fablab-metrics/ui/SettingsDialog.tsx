@@ -49,7 +49,9 @@ function SettingsDialogContent({
           <DialogTitle className="font-bold">Aktualizace metrik</DialogTitle>
           <p>
             Poslední aktualizace:{" "}
-            {format(new Date(status.data?.date), "d. MMMM yyyy, HH:mm")}
+            {status.data?.date != null
+              ? format(new Date(status.data?.date), "d. MMMM yyyy, HH:mm")
+              : "Nikdy"}
           </p>
           <div className="flex justify-end">
             <button
