@@ -7,14 +7,10 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const filename = path.join(DATA_PATH, "status.json");
 
-  console.debug(`Reading ${filename}`);
   const data = await fs
     .readFile(filename, "utf8")
     .then((content) => JSON.parse(content))
-    .catch((e) => {
-      console.error(e);
-      return {};
-    });
+    .catch((e) => ({}));
 
   return Response.json(data);
 }
