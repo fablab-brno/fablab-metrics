@@ -2,6 +2,8 @@ import { DATA_PATH } from "fablab-metrics/env";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const filename = path.join(DATA_PATH, "ignored_packages.json");
 
