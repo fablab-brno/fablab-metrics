@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     fabman_api_url: str = Field(default="https://fabman.io/api/v1/")
     fabman_api_key: str
 
+    reenio_api_url: str = Field(default="https://reenio.cz")
+    reenio_api_subpath: str = Field(default="api/v1/admin/")
+    reenio_api_key: str
+
     data_path: str = Field(default=os.path.join(root_dir, "data"))
 
     db_path: str = Field(default=os.path.join(root_dir, "cache", "metrics.db"))

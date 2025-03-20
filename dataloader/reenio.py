@@ -2,10 +2,9 @@ import json
 import re
 import os
 from pathlib import Path
-from typing import Literal
 
 from requests import Session
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 from settings import get_settings
 
@@ -38,72 +37,54 @@ def persist_to_file(base_file_name):
     return decorator
 
 
-class FabmanSession(Session):
+class ReenioSession(Session):
     """
-    Adds Fabman base URL and token authentication to each request.
+    Adds Reenio base URL and token authentication to each request.
     """
 
-    def __init__(self):
+    def __init__(self, lang: str):
         super().__init__()
-        self.base_url = settings.fabman_api_url
-        self.headers.update({"Authorization": f"Bearer {settings.fabman_api_key}"})
+        self.base_url = f"{settings.reenio_api_url}/{lang}/{settings.reenio_api_subpath}"
+        self.headers.update({"Authorization": f"Bearer {settings.reenio_api_key}"})
 
     def request(self, method, url, *args, **kwargs):
         joined_url = urljoin(self.base_url, url)
         return super().request(method, joined_url, *args, **kwargs)
 
-    def get_all_json(self, url, params, batch_size=200):
-        offset = 0
+    def get_all_json(self, url, params, batch_size=10):
+        continuation_token = ""
         while True:
             response = self.get(
                 url,
                 params={
                     **params,
                     "limit": batch_size,
-                    "offset": offset,
+                    "continuationToken": continuation_token,
                 },
             ).json()
 
-            yield from response
+            yield from response["list"]
 
-            if len(response) < batch_size:
+            if not response["hasNextPage"]:
                 break
 
-            offset += batch_size
+            parsed_next_page_query = urlparse(response["nextPage"]).query
+            continuation_token = parsed_next_page_query.split("=")[-1]
 
-    @persist_to_file("list_members")
-    def list_members(self, include: Literal["memberPackages", "trainings"] = None):
+    @persist_to_file("list_reservations_customers_emails")
+    def list_reservations_customers_emails(self):
         return self.get_all_json(
-            "members",
-            params={"embed": include},
+            "customers",
+            params=None,
         )
 
-    @persist_to_file("list_resources")
-    def list_resources(self):
+    @persist_to_file("list_tours_reservations_logs")
+    def list_tours_reservations_logs(self, date_start, date_end):
         yield from self.get_all_json(
-            "resources",
+            "reservation",
             params={
-                "state": ["active", "locked"],
-                "space": 3,
+                "start": date_start,
+                "end": date_end,
+                "serviceId": 38280
             },
-        )
-
-    @persist_to_file("list_resource_logs")
-    def list_resource_logs(self, date_start, date_end):
-        yield from self.get_all_json(
-            "resource-logs",
-            params={
-                "from": date_start,
-                "until": date_end,
-                "status": "complete",
-                "type": "allowed",
-                "space": 3,
-            },
-        )
-
-    @persist_to_file("list_training_courses")
-    def list_training_courses(self):
-        yield from self.get_all_json(
-            "training-courses",
-            params={"archived": False},
         )

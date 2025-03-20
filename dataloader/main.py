@@ -6,7 +6,7 @@ from os import path
 
 from dateutil.relativedelta import relativedelta
 
-from dates import monthly, yearly
+from dates import monthly, yearly, tours_monthly, tours_yearly
 from members.extract import (
     extract_member_trainings,
     extract_training_courses,
@@ -23,11 +23,19 @@ from members.write import write_training_courses
 from resources.extract import extract_resources, extract_resource_logs
 from resources.transform import calculate_resource_usage, calculate_member_visits
 from resources.write import write_resources
+
+from tours.extract import extract_tours_reservations_logs, extract_members_emails
+from tours.write import write_tours_reservations
+from tours.transform import calculate_tours_members_ratios_and_counts
+
 from settings import get_settings
 
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
+
+date_start_fabman = datetime(year=2017, month=1, day=1)
+date_start_reenio = datetime(year=2017, month=1, day=1)
 
 
 def group_by_date(data):
@@ -58,13 +66,17 @@ if __name__ == "__main__":
 
     if db_empty:
         print("Fetching all historical resource logs")
-        date_start = datetime(year=2017, month=1, day=1)
+        date_start = min(date_start_fabman, date_start_reenio)
         last_date = datetime.today().replace(day=1) + relativedelta(months=1)
 
         while date_start < last_date:
             date_end = date_start + relativedelta(months=1)
+
             extract_resource_logs(date_start=date_start, date_end=date_end)
+            extract_tours_reservations_logs(date_start=date_start, date_end=date_end, lang="cs")
+
             date_start = date_end
+
     else:
         # Fetch data from last month. Script is supposed to run monthly which gives
         # enough overlap.
@@ -72,14 +84,17 @@ if __name__ == "__main__":
         date_start = date_end + relativedelta(months=-1)
 
         extract_resource_logs(date_start=date_start, date_end=date_end)
+        extract_tours_reservations_logs(date_start=date_start, date_end=date_end, lang="cs")
 
     extract_resources()
     extract_training_courses()
     member_packages_status = extract_member_packages()
     extract_member_trainings()
+    extract_members_emails()
 
     write_training_courses()
     write_resources()
+    write_tours_reservations()
 
     with open(os.path.join(settings.data_path, "status.json"), "w") as jsonfile:
         json.dump(
@@ -102,6 +117,8 @@ if __name__ == "__main__":
         # Trainings
         "trainings_by_date": calculate_trainings_by_date,
         "trainings_by_member": calculate_trainings_by_member,
+        # Tours
+        "tours_members_to_reservations": calculate_tours_members_ratios_and_counts
     }
 
     granularity = {

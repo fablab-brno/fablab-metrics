@@ -4,6 +4,9 @@ import { PackageChangesByMonth } from "fablab-metrics/components/metrics/Package
 import { ResourceUsage } from "fablab-metrics/components/metrics/ResourceUsage";
 import { TotalMembersByPackage } from "fablab-metrics/components/metrics/TotalMembersByPackage";
 import { TrainingsByDate } from "fablab-metrics/components/metrics/TrainingsByDate";
+import { TotalToursReservations } from "fablab-metrics/components/metrics/TotalToursReservations";
+import { ToursMembers } from "fablab-metrics/components/metrics/ToursMembers";
+import { ToursMembersToReservations } from "fablab-metrics/components/metrics/ToursMembersToReservations";
 import { TrainingsByMember } from "fablab-metrics/components/metrics/TrainingsByMember";
 import { MembersWithoutPackage } from "fablab-metrics/ui/MembersWithoutPackage";
 import { SectionHeading } from "fablab-metrics/ui/SectionHeading";
@@ -43,6 +46,15 @@ export default function Page() {
 
       <SectionHeading>Nově absolvovaná školení</SectionHeading>
       <TrainingsByDate />
+
+      <SectionHeading>Počet lidí na Fablab Tour</SectionHeading>
+      <TotalToursReservations />
+
+      <SectionHeading>Poměr registrovaných členů z Fablab Tour</SectionHeading>
+      <ToursMembers />
+
+      <SectionHeading>Počet účastníků Fablab Tour a registrovaných členů</SectionHeading>
+      <ToursMembersToReservations />
     </main>
   );
 }
