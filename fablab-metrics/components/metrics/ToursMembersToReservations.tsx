@@ -73,7 +73,7 @@ function PackageTooltip({ data }: any) {
             <div style={theme.tooltip.basic} key={key}>
               <Chip color={(key == "members") ? "#507712" : "#D64545"} style={theme.tooltip.chip} />
               <span key={key}>
-                {DATA[key as keyof typeof DATA]}: <strong>{data[key]} (⌀{data["average_" + key]})</strong>
+                {DATA[key as keyof typeof DATA]}: <strong>{data[key]})</strong>
               </span>
             </div>
           ))}

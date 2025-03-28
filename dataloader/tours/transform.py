@@ -31,11 +31,10 @@ def calculate_tours_members_ratios_and_counts(date_window):
 
             yield {
                 "date": date_start,
-                # **data
                 "total": sum(visitors_count),
                 "average_total": round(sum(visitors_count) / len(visitors_count), 1) if visitors_count else visitors_count,
                 "members": sum(members_count),
-                "average_members": round(sum(members_count) / len(members_count), 1) if members_count else members_count,
+                # "average_members": round(sum(members_count) / len(members_count), 1) if members_count else members_count,
                 "non_members": sum(visitors_count) - sum(members_count),
-                "average_non_members": round(sum(non_members_count) / len(non_members_count), 1) if non_members_count else non_members_count
+                # "average_non_members": round(sum(non_members_count) / len(non_members_count), 1) if non_members_count else non_members_count
             }
