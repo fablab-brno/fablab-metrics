@@ -1,7 +1,37 @@
 from db import get_db
 
 
+"""
+SELECT membership.date_start as member_since, membership.member_id
+FROM membership
+JOIN tours_reservations ON tours_reservations.member_id = membership.member_id
+WHERE membership.date_start > tours_reservations.date_start
+AND membership.date_start < date(tours_reservations.date_start, '+3 months')
+AND tours_reservations.member_id = 686546
+AND tours_reservations.date_start >= '2025-01-01'
+AND tours_reservations.date_start < '2025-02-01'
+"""
+
+"""
+WITH members as (
+	SELECT COUNT(*) as count, membership.member_id as member_id
+	FROM membership
+	JOIN tours_reservations ON tours_reservations.member_id = membership.member_id
+	WHERE membership.date_start > tours_reservations.date_start
+	AND membership.date_start < date(tours_reservations.date_start, '+3 months')
+	AND tours_reservations.date_start >= '2025-01-01'
+	AND tours_reservations.date_start < '2025-02-01'
+	-- AND tours_reservations.member_id IN (687455, 686129, 686546)
+	GROUP BY tours_reservations.member_id
+)
+SELECT
+	COUNT(*)
+FROM members
+"""
+
+
 def calculate_tours_members_ratios_and_counts(date_window):
+    memberships = []
     for date_start, date_end in date_window():
         with get_db() as db:
             res = db.execute(
@@ -15,6 +45,70 @@ def calculate_tours_members_ratios_and_counts(date_window):
                 WHERE 
                     date_start <= :date_end
                     AND date_end >= :date_start
+                GROUP BY name, date_start
+                """,
+                {"date_start": date_start, "date_end": date_end},
+            )
+
+            visitors_count = []
+            non_members_count = []
+            members_count = []
+
+            for visitors, non_members, members in res.fetchall():
+                visitors_count.append(visitors)
+                non_members_count.append(non_members)
+                members_count.append(members)
+
+            memberships_res = db.execute(
+                """
+                SELECT COUNT(*) as count, membership.member_id
+                FROM membership
+                JOIN tours_reservations ON tours_reservations.member_id = membership.member_id
+                WHERE membership.date_start > tours_reservations.date_start
+                AND membership.date_start < date(tours_reservations.date_start, '+3 months')
+                AND tours_reservations.date_start >= :date_start
+                AND tours_reservations.date_start < :date_end
+                GROUP BY membership.member_id
+                """,
+                {"date_start": date_start, "date_end": date_end},
+            )
+
+            purchased_membership = [{
+                "count": count,
+                "member_id": member_id
+            } for count, member_id in memberships_res.fetchall()]
+            memberships += purchased_membership
+
+            yield {
+                "date": date_start,
+                "total": sum(visitors_count),
+                "average_total": round(sum(visitors_count) / len(visitors_count), 1) if visitors_count else visitors_count,
+                "members": sum(members_count),
+                "non_members": sum(visitors_count) - sum(members_count),
+                "purchased_memberships": len(purchased_membership)
+            }
+
+    pass
+
+def get_memberships_in_three_months(date_window):
+    for date_start, date_end in date_window():
+        with get_db() as db:
+            res = db.execute(
+                """
+                SELECT
+                    COUNT(*) AS visitors,
+                    COUNT(CASE WHEN is_member = FALSE THEN 1 END) AS non_members,
+	                COUNT(CASE WHEN is_member = TRUE THEN 1 END) AS members
+                FROM 
+                    membership
+                WHERE 
+                    date_start <= :date_end
+                    AND date_end >= :date_start
+                    AND (
+                        package = 'Mistr'
+                        OR package = 'Učedník'
+                        OR package = 'Tovaryš'
+                    )
                 GROUP BY name, date_start
                 """,
                 {"date_start": date_start, "date_end": date_end},

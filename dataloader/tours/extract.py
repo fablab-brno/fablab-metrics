@@ -50,7 +50,8 @@ def extract_members_emails():
     with get_db() as db:
         db.executemany(
             """
-            UPDATE tours_reservations SET is_member = TRUE
+            UPDATE tours_reservations
+            SET is_member = TRUE, member_id = :id
             WHERE customer_email = :email
             """,
             members_emails,
