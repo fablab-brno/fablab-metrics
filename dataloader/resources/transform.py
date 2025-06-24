@@ -1,8 +1,16 @@
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
 from db import get_db
 
 
 def calculate_resource_usage(date_window):
+    last_date = datetime.today().replace(day=1) + relativedelta(months=1)
+
     for date_start, date_end in date_window():
+        if date_end > last_date:
+            break
+
         with get_db() as db:
             res = db.execute(
                 """

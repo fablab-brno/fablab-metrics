@@ -9,8 +9,8 @@ import { useTheme } from "@nivo/core";
 import { Chip } from "@nivo/tooltip";
 
 const DATA = {
-  "members": "Registrace Fabman",
-  "non_members": "Neregistrovaní",
+  "attendees_count": "Registrovaní a zúčastnění",
+  "non_attendees_count": "Registrovaní a nezúčastnění",
   "purchased_memberships": "Zakoupená členství do 3 měsíců",
   "purchased_memberships_progress": "Neuzavřená zakoupená členství",
 };
@@ -26,12 +26,12 @@ export function ToursMembersToReservations() {
   if (metrics.isLoading) return null;
 
   const data = metrics.data.map((d: any) => ({
-    total: d.total,
-    average_total: d.average_total,
-    date: d.date,
-    [DATA.members]: d.members,
-    [DATA.non_members]: d.non_members,
-    [DATA.purchased_memberships]: d.purchased_memberships
+      total_registrations: d.total_registrations,
+      average_total: d.average_total,
+      date: d.date,
+      [DATA.attendees_count]: d.attendees_count,
+      [DATA.non_attendees_count]: d.non_attendees_count,
+      [DATA.purchased_memberships]: d.purchased_memberships
   }));
 
   return (
@@ -67,9 +67,9 @@ const isColumnActiveForMembership = (date: Date) => {
 
 const getTooltipBoxColor = (column: string) => {
     switch(column){
-        case DATA.members:
+        case DATA.attendees_count:
             return "#507712";
-        case DATA.non_members:
+        case DATA.non_attendees_count:
             return "#D64545";
         case DATA.purchased_memberships:
             return "#FFFF00";
@@ -85,9 +85,9 @@ function PackageTooltip({ data }: any) {
     <div style={theme.tooltip.container}>
       <div style={theme.tooltip.basic}>
         <span>
-          Celkem: <strong>{`${data.total}`} (⌀{data.average_total})</strong>
+          Celkem: <strong>{`${data.total_registrations}`} (⌀{data.average_total})</strong>
           <br/>
-          Registrace Fabman: <strong>{`${Math.round((data[DATA.members] / data.total) * 100)}`}%</strong>
+          Registrace Fabman: <strong>{`${Math.round((data[DATA.attendees_count] ?? 0 / data.total_registrations) * 100)}`}%</strong>
         </span>
       </div>
 

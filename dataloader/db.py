@@ -78,7 +78,8 @@ def get_db_connection():
             customer_id integer,
             customer_email text default '',
             is_member boolean default FALSE,
-            member_id integer
+            member_id integer,
+            state integer
         )
         """,
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_tours_reservations_id ON tours_reservations (id)",

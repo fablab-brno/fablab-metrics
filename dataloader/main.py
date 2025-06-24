@@ -105,7 +105,7 @@ if __name__ == "__main__":
     #         jsonfile,
     #         ensure_ascii=False,
     #     )
-    #
+
     datasets = {
         # # Members & packages
         # "active_members_by_package": calculate_active_members_by_package,
@@ -117,7 +117,7 @@ if __name__ == "__main__":
         # # Trainings
         # "trainings_by_date": calculate_trainings_by_date,
         # "trainings_by_member": calculate_trainings_by_member,
-        # Tours
+        # # Tours
         "tours_members_to_reservations": calculate_tours_members_ratios_and_counts
     }
 
