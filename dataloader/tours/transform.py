@@ -16,7 +16,7 @@ def calculate_tours_members_ratios_and_counts(date_window):
             res = db.execute(
                 """
                 SELECT
-                    COUNT(*) AS total_registrations,
+                    COUNT(*) AS registrations,
                     COUNT(CASE WHEN state != 4 THEN 1 END) AS non_attendees,
                     COUNT(CASE WHEN (is_member = FALSE AND state = 4) THEN 1 END) AS non_members_visitors,
                     COUNT(CASE WHEN (is_member = TRUE AND state = 4) THEN 1 END) AS members_visitors
@@ -66,6 +66,7 @@ def calculate_tours_members_ratios_and_counts(date_window):
                 "total_registrations": sum(total_registrations),
                 "average_total": round(sum(total_registrations) / len(total_registrations), 1) if total_registrations else total_registrations,
                 "attendees_count": round(sum(total_registrations) - sum(non_attendees_count)),
+                "members": sum(members_count),
                 "non_attendees_count": sum(non_attendees_count),
                 "purchased_memberships": len(purchased_membership)
             }
