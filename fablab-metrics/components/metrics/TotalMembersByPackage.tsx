@@ -20,7 +20,7 @@ export function TotalMembersByPackage() {
   const sumOthers = (metric: any)=> {
     return sum(
       Object.keys(metric)
-        .filter((key) => key !== "date" && !selectedPackages.find(p => p.name.includes(key)))
+        .filter((key) => key !== "date" && !selectedPackages.find(p => p && p.name.includes(key)))
           .map((key) => metric[key]),
         );
   }
@@ -38,9 +38,9 @@ export function TotalMembersByPackage() {
   });
 
   selectedPackages.forEach((p) => {
-    if (p.name.startsWith("Tovaryš")) {
+    if (p && p.name.startsWith("Tovaryš")) {
       dataset.push({
-        id: p.name,
+        id: p?.name,
         data: metrics.data.map((metric: any) => ({
           x: metric.date,
           y: Object.values(Object.fromEntries(Object.entries(metric).filter(([key]) => key.startsWith("Tovaryš")))).reduce((sum: number, value) => sum + (value as number), 0) ?? 0
@@ -49,10 +49,10 @@ export function TotalMembersByPackage() {
     }
     else {
       dataset.push({
-        id: p.name,
+        id: p?.name ?? "",
         data: metrics.data.map((metric: any) => ({
           x: metric.date,
-          y: metric[p.name] ?? 0,
+          y: metric[p?.name ?? ""] ?? 0,
         })),
       });
     }
@@ -62,7 +62,7 @@ export function TotalMembersByPackage() {
     id: "Celkem vybrané",
     data: metrics.data.map((metric: any) => ({
       x: metric.date,
-      y: sum(selectedPackages.map((p) => metric[p.name] ?? 0)),
+      y: sum(selectedPackages.map((p) => metric[p?.name ?? ""] ?? 0)),
     })),
   });
 
@@ -70,7 +70,7 @@ export function TotalMembersByPackage() {
     id: "Celkem všechny",
     data: metrics.data.map((metric: any) => ({
       x: metric.date,
-      y: sumOthers(metric) + sum(selectedPackages.map((p) => metric[p.name] ?? 0)),
+      y: sumOthers(metric) + sum(selectedPackages.map((p) => metric[p?.name ?? ""] ?? 0)),
     })),
   });
 
