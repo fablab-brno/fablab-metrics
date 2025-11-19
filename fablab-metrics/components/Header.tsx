@@ -3,6 +3,7 @@ import { DateZoomSelector } from "fablab-metrics/ui/DateZoomSelector";
 import { SettingsDialog } from "fablab-metrics/ui/SettingsDialog";
 import Image from "next/image";
 import React from "react";
+import {MemberPackagesDropdown} from "fablab-metrics/ui/MemberPackagesDropdown";
 
 export function Header() {
   return (
@@ -24,6 +25,7 @@ export function Header() {
         <div className="justify-self-center flex items-center gap-4">
           <DateZoomSelector />
           <DateRangeDropdown />
+          <MemberPackagesDropdown />
         </div>
         <div className="justify-self-end">
           <SettingsDialog />

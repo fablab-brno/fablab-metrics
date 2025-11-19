@@ -18,3 +18,15 @@ def write_training_courses():
 
         with open(filename, "w") as jsonfile:
             json.dump(list(training_courses), jsonfile, ensure_ascii=False)
+
+
+def write_packages():
+    with get_db() as db:
+        res = db.execute("SELECT * FROM packages;")
+        packages = map(dict, res.fetchall())
+
+        filename = path.join(settings.data_path, "packages.json")
+        os.makedirs(path.dirname(filename), exist_ok=True)
+
+        with open(filename, "w") as jsonfile:
+            json.dump(list(packages), jsonfile, ensure_ascii=True)

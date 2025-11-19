@@ -19,7 +19,7 @@ from members.transform import (
     calculate_package_changes_by_month,
     calculate_trainings_by_member,
 )
-from members.write import write_training_courses
+from members.write import write_training_courses, write_packages
 from resources.extract import extract_resources, extract_resource_logs
 from resources.transform import calculate_resource_usage, calculate_member_visits
 from resources.write import write_resources
@@ -58,7 +58,7 @@ def write_dataset(name, granularity_label, dataset):
         os.makedirs(path.dirname(filename), exist_ok=True)
 
         with open(filename, "w") as jsonfile:
-            json.dump(list(data), jsonfile, ensure_ascii=False)
+            json.dump(list(data), jsonfile, ensure_ascii=True)
 
 
 if __name__ == "__main__":
@@ -130,3 +130,5 @@ if __name__ == "__main__":
         for metric, fn in datasets.items():
             print(f"Processing {metric} - {granularity_label}")
             write_dataset(metric, granularity_label, fn(data_window))
+
+    write_packages()

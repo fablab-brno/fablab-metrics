@@ -22,12 +22,17 @@ def extract_member_packages():
 
             for package in dot_path(member, "_embedded.memberPackages"):
                 package_name = dot_path(package, "_embedded.package.name")
-                package_name = normalize_package_name(package_name)
+                package_id = dot_path(package, "_embedded.package.id")
 
                 date_start = package["fromDate"]
                 date_end = package["untilDate"]
 
-                parsed_packages.append(NamedRange(package_name, date_start, date_end))
+                parsed_packages.append({
+                    "name": package_name,
+                    "date_start": date_start,
+                    "date_end": date_end,
+                    "package_id": package_id
+                })
 
             member_id = member["id"]
 
@@ -37,9 +42,18 @@ def extract_member_packages():
 
             for package in parsed_packages:
                 db.execute(
-                    "INSERT INTO membership (member_id, package, date_start, date_end) VALUES (?, ?, ?, ?)",
-                    (member_id, package.name, package.start, package.end),
+                    "INSERT INTO membership (member_id, package, date_start, date_end, package_id) VALUES (?, ?, ?, ?, ?)",
+                    (member_id, package["name"], package["date_start"], package["date_end"], package["package_id"]),
                 )
+
+        db.execute("DELETE FROM packages WHERE id > 0")
+
+        db.execute("""
+            INSERT INTO packages (id, name)
+            SELECT package_id AS id, package AS name
+            FROM membership
+            GROUP BY package;
+        """)
 
     return {
         "members_without_package": members_without_package,

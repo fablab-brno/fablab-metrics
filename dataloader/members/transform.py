@@ -2,10 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from db import get_db
-from members.constants import (
-    package_level_sql,
-    package_labels,
-)
+from members.constants import package_level_sql
 
 
 def calculate_trainings_by_date(date_window):
@@ -140,31 +137,33 @@ def calculate_total_members_by_package(date_window):
         for date_start, date_end in date_window():
             res = db.execute(
                 f"""
-                    SELECT 
-                        {package_level_sql},
-                        COUNT(DISTINCT membership.member_id)
+                    SELECT
+                        package as package_name,
+                        COUNT(DISTINCT membership.member_id) AS member_count
                     FROM membership 
                     INNER JOIN (
                         SELECT
                             MAX({package_level_sql}) as package_level,
+                            membership.package_id,
                             member_id 
-                        FROM membership
-                        WHERE :date >= date(date_start)
-                        GROUP BY member_id
+                            FROM membership
+                            WHERE :date >= date(date_start)
+                            GROUP BY member_id
                     ) AS highest_package ON
                         membership.member_id = highest_package.member_id
+                        AND membership.package_id = highest_package.package_id
                         AND {package_level_sql} = highest_package.package_level
-                    WHERE 
-                        :date >= date(date_start)
-                    GROUP BY package_level
+                    WHERE :date >= date(date_start)
+                    GROUP BY highest_package.package_id
                 """,
                 {"date": date_end},
             )
+
             yield {
                 "date": date_start,
                 **{
-                    package_labels[package_level]: count
-                    for package_level, count in res.fetchall()
+                    package_name: member_count
+                    for package_name, member_count in res.fetchall()
                 },
             }
 
