@@ -25,16 +25,19 @@ export function MemberPackageFilterProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const storedMemberPackagesFilter = localStorage.getItem("memberPackagesFilter");
   const [allPackages, setAllPackages] = React.useState<IMemberPackageType[]>([]);
-  const [selectedPackages, setSelectedPackages] = React.useState<IMemberPackageType[]>(JSON.parse(storedMemberPackagesFilter ?? "[]"));
+  const [selectedPackages, setSelectedPackages] = React.useState<IMemberPackageType[]>([]);
 
-  React.useEffect(
-    () => {
-      localStorage.setItem("memberPackagesFilter", JSON.stringify(selectedPackages));
-    },
-    [selectedPackages]
-  )
+  React.useEffect(() => {
+    const stored = localStorage.getItem("memberPackagesFilter");
+    if (stored) {
+      setSelectedPackages(JSON.parse(stored ?? "[]"));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    localStorage.setItem("memberPackagesFilter", JSON.stringify(selectedPackages));
+  }, [selectedPackages]);
 
   const fetchedPackages = usePackages();
 
