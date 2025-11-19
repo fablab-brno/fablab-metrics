@@ -24,7 +24,8 @@ def get_db_connection():
             member_id integer,
             package text,
             date_start text,
-            date_end text
+            date_end text,
+            package_id integer
         )
         """,
         """
@@ -68,18 +69,24 @@ def get_db_connection():
             CHECK ( type IN ('entrance', 'machine', '') )
         )
         """,
+        """
+        CREATE TABLE IF NOT EXISTS packages(
+            id integer,
+            name text
+        )
+        """,
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_resources_id ON resources (id)",
         """
         CREATE TABLE IF NOT EXISTS tours_reservations(
-            id integer,
-            name text,
-            date_start text,
-            date_end text,
-            customer_id integer,
-            customer_email text default '',
-            is_member boolean default FALSE,
-            member_id integer,
-            state integer
+                                                         id integer,
+                                                         name text,
+                                                         date_start text,
+                                                         date_end text,
+                                                         customer_id integer,
+                                                         customer_email text default '',
+                                                         is_member boolean default FALSE,
+                                                         member_id integer,
+                                                         state integer
         )
         """,
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_tours_reservations_id ON tours_reservations (id)",

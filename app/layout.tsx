@@ -1,5 +1,6 @@
 import { Header } from "fablab-metrics/components/Header";
 import { DateRangeProvider } from "fablab-metrics/ui/useDateRange";
+import { MemberPackageFilterProvider } from "fablab-metrics/ui/useMemberPackageFilter";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
@@ -20,8 +21,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <DateRangeProvider>
-          <main className="pt-20">{children}</main>
-          <Header />
+          <MemberPackageFilterProvider>
+            <main className="pt-20">{children}</main>
+            <Header />
+          </MemberPackageFilterProvider>
         </DateRangeProvider>
       </body>
     </html>
