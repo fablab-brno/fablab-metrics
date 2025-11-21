@@ -11,7 +11,7 @@ import { Chip } from "@nivo/tooltip";
 const DATA = {
   "attendees_count": "Absolvovaná Tour",
   "members": "Registrace FabMan",
-  "purchased_memberships": "Zakoupená členství do 3 měsíců",
+  "purchased_memberships": "Zakoupená členství do 1 měsíce",
   "purchased_memberships_progress": "Neuzavřená zakoupená členství",
 };
 
@@ -62,7 +62,7 @@ export function ToursMembersToReservations() {
 
 const isColumnActiveForMembership = (date: Date) => {
     const today = new Date();
-    return date <= new Date(today.setMonth(today.getMonth() - 3));
+    return date <= new Date(today.setMonth(today.getMonth() - 1));
 }
 
 const getTooltipBoxColor = (column: string) => {
