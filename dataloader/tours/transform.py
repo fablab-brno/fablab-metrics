@@ -43,13 +43,14 @@ def calculate_tours_members_ratios_and_counts(date_window):
 
             memberships_res = db.execute(
                 """
-                SELECT COUNT(*) as count, membership.member_id
+                SELECT COUNT(*) as count, membership.member_id as member_id
                 FROM membership
                 JOIN tours_reservations ON tours_reservations.member_id = membership.member_id
                 WHERE membership.date_start > tours_reservations.date_start
                 AND membership.date_start < date(tours_reservations.date_start, '+1 months')
                 AND tours_reservations.date_start >= :date_start
                 AND tours_reservations.date_start < :date_end
+                AND tours_reservations.state = 4
                 GROUP BY membership.member_id
                 """,
                 {"date_start": date_start, "date_end": date_end},
