@@ -80,11 +80,18 @@ class ReenioSession(Session):
 
     @persist_to_file("list_tours_reservations_logs")
     def list_tours_reservations_logs(self, date_start, date_end):
-        yield from self.get_all_json(
-            "reservation",
-            params={
-                "start": date_start,
-                "end": date_end,
-                "serviceId": 38280
-            },
-        )
+        tours = {
+            "FabLab Tour JIC": 38280,
+            "Fablab Tour EN": 43587,
+            "Fablab Tour KUMST": 50516
+        }
+
+        for service_id in tours.values():
+            yield from self.get_all_json(
+                "reservation",
+                params={
+                    "start": date_start,
+                    "end": date_end,
+                    "serviceId": service_id
+                },
+            )
