@@ -63,10 +63,14 @@ export function ActiveMembersByPackage() {
 
   if (metrics.isLoading) return null;
 
+  const getCountsFromData = (m: {}) => {
+    return Object.entries(m).map(e => [e[0], (e[0] == "date") ? e[1] : (e[1] as any).total_count])
+  }
+
   const data = metrics.data.map((m: any) => ({
-      ...Object.fromEntries(Object.entries(m).filter(([key]) => !key.startsWith("Tovaryš"))),
-      Ostatní: sumOthers(m),
-      "Tovaryš": Object.values(Object.fromEntries(Object.entries(m).filter(([key]) => key.startsWith("Tovaryš")))).reduce((sum: number, value) => sum + (value as number), 0) ?? 0
+      ...Object.fromEntries(getCountsFromData(m).filter(([key]) => !key.startsWith("Tovaryš"))),
+      Ostatní: sumOthers(Object.fromEntries(getCountsFromData(m))),
+      "Tovaryš": Object.values(Object.fromEntries(getCountsFromData(m).filter(([key]) => key.startsWith("Tovaryš")))).reduce((sum: number, value) => sum + (value as number), 0) ?? 0
   }));
 
   return (

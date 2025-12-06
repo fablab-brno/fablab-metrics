@@ -1,0 +1,29 @@
+{
+	"provider": "node",
+	"packages": {
+		"node": "24",
+		"python": "3.11",
+		"poetry": "2.2.1"
+	},
+	"steps": {
+		"python-install": {
+			"commands": [
+				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
+				{ "src": "poetry.lock", "dest": "poetry.lock" },
+				"apt-get update",
+				"apt-get install curl",
+				"mise uninstall poetry@2.2.1",
+				"mise install poetry@2.2.1",
+				"poetry config virtualenvs.in-project true",
+				"poetry install"
+			]
+		},
+		"install": {
+			"inputs": [
+				{ "step": "python-install" },
+				{ "src": "/app/.venv", "dest": "/app/.venv" },
+				"..."
+			]
+		}
+	}
+}

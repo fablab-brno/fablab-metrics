@@ -11,6 +11,14 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
+GENDER_OPTIONS = {
+    "male": "Muž",
+    "female": "Žena",
+    "other": "Jiné",
+    "-": "Neuvedeno",
+}
+
+
 def extract_member_packages():
     with FabmanSession() as s:
         members = s.list_members("memberPackages")
@@ -31,7 +39,8 @@ def extract_member_packages():
                     "name": package_name,
                     "date_start": date_start,
                     "date_end": date_end,
-                    "package_id": package_id
+                    "package_id": package_id,
+                    "gender": GENDER_OPTIONS.get(member.get("gender") or "-") or "Neuvedeno"
                 })
 
             member_id = member["id"]
@@ -42,8 +51,8 @@ def extract_member_packages():
 
             for package in parsed_packages:
                 db.execute(
-                    "INSERT INTO membership (member_id, package, date_start, date_end, package_id) VALUES (?, ?, ?, ?, ?)",
-                    (member_id, package["name"], package["date_start"], package["date_end"], package["package_id"]),
+                    "INSERT INTO membership (member_id, package, date_start, date_end, package_id, gender) VALUES (?, ?, ?, ?, ?, ?)",
+                    (member_id, package["name"], package["date_start"], package["date_end"], package["package_id"], package["gender"]),
                 )
 
         db.execute("DELETE FROM packages WHERE id > 0")
