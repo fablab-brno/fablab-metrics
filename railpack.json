@@ -1,7 +1,12 @@
 {
-  "provider": "node",
-  "packages": {
-    "node": "24",
-    "python": "3.13"
-  }
+	"provider": "node",
+	"packages": {
+	"node": "24",
+	"python": "3.13"
+	},
+	"steps": {
+		"build": {
+			"commands": ["...", "pip3 install -r ./dataloader/requirements.txt"]
+		}
+	}
 }
