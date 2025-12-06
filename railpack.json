@@ -6,7 +6,7 @@
 	},
 	"steps": {
 		"build": {
-			"commands": ["...", "pip3 install -r ./dataloader/requirements.txt"]
+			"commands": ["...", "ls", "pip3 install -r ./dataloader/requirements.txt"]
 		}
 	}
 }
