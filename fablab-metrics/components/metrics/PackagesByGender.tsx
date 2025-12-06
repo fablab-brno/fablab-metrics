@@ -30,7 +30,7 @@ const getTooltipBoxColor = (column: string) => {
   }
 }
 
-export function PaidMembershipsByGender() {
+export function PackagesByGender() {
   const { zoom } = useDateRange();
   const metrics = useMetrics("active_members_by_package");
   const { selectedPackages = [] } = useMemberPackageFilter();
@@ -41,12 +41,12 @@ export function PaidMembershipsByGender() {
 
   const PackageTooltip = ({ data }: any) => {
     const theme = useTheme();
-    console.debug(data)
+
     return (
       <div style={theme.tooltip.container}>
         <div style={theme.tooltip.basic}>
         <span>
-          Celkem: <strong>{`${Object.values(data).reduce((acc: any, curr: any) => acc + curr, 0)}`}</strong>
+          Celkem: <strong>{`${Object.values(Object.fromEntries(Object.entries(data).filter(e => e[0] != "date"))).reduce((acc: any, curr: any) => acc + curr, 0)}`}</strong>
         </span>
         </div>
 

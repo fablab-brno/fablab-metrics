@@ -10,7 +10,7 @@ import { MembersWithoutPackage } from "fablab-metrics/ui/MembersWithoutPackage";
 import { SectionHeading } from "fablab-metrics/ui/SectionHeading";
 import { TrainingsByMemberInfoDialog } from "fablab-metrics/ui/TrainingsByMemberInfoDialog";
 import { ToursByInformationSource } from "fablab-metrics/components/metrics/ToursByInformationSource";
-import { PaidMembershipsByGender } from "fablab-metrics/components/metrics/PaidMembershipsByGender";
+import { PackagesByGender } from "fablab-metrics/components/metrics/PackagesByGender";
 
 export default function Page() {
   return (
@@ -27,7 +27,7 @@ export default function Page() {
       <ActiveMembersByPackage />
 
       <SectionHeading>Placená členství podle genderu</SectionHeading>
-      <PaidMembershipsByGender />
+      <PackagesByGender />
 
       <SectionHeading>Přechody mezi členstvím</SectionHeading>
       <PackageChangesByMonth />
