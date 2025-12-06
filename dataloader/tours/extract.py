@@ -23,15 +23,16 @@ def extract_tours_reservations_logs(date_start, date_end, lang: str):
                 "date_end": l["end"].split("T")[0],
                 "customer_id": l["customer"]["id"],
                 "customer_email": get_customer_email(l["customer"]["id"]),
-                "state": l["state"]
+                "state": l["state"],
+                "info_source": next((f for f in (l.get("customForms") or [{ "fields": [{}] }])[0]["fields"] if f.get("key") == "FFGIFCUH"), {"value": ""}).get("value") or "neuvedeno"
             } for l in logs
         ]
 
     with get_db() as db:
         db.executemany(
             """
-            REPLACE INTO tours_reservations (id, name, date_start, date_end, customer_id, customer_email, state) 
-            VALUES (:id, :name, :date_start, :date_end, :customer_id, :customer_email, :state)
+            REPLACE INTO tours_reservations (id, name, date_start, date_end, customer_id, customer_email, state, info_source) 
+            VALUES (:id, :name, :date_start, :date_end, :customer_id, :customer_email, :state, :info_source)
             """,
             reservations
         )

@@ -16,5 +16,5 @@ def write_resources():
         filename = path.join(settings.data_path, "resources.json")
         os.makedirs(path.dirname(filename), exist_ok=True)
 
-        with open(filename, "w") as jsonfile:
+        with open(filename, "w", encoding="utf-8") as jsonfile:
             json.dump(list(resources), jsonfile, ensure_ascii=False)

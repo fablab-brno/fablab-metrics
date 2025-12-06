@@ -5,28 +5,19 @@ import { useTheme } from "@nivo/core";
 import { Chip } from "@nivo/tooltip";
 import { formatDate } from "date-fns";
 import { useMetrics } from "fablab-metrics/components/useMetrics";
+import { useToursSource } from "fablab-metrics/components/useToursSource";
 import { useChartCommonProps } from "fablab-metrics/ui/useChartCommonProps";
 import { useDateRange } from "fablab-metrics/ui/useDateRange";
-import { sum } from "ramda";
-import { useMemberPackageFilter } from "fablab-metrics/ui/useMemberPackageFilter";
 
 
-export function ActiveMembersByPackage() {
+export function ToursByInformationSource() {
   const { zoom } = useDateRange();
-  const metrics = useMetrics("active_members_by_package");
-  const { selectedPackages = [] } = useMemberPackageFilter();
+  const metrics = useMetrics("tours_info_source");
+  const keys = useToursSource();
 
   const chartCommonProps = useChartCommonProps({
-    leftAxisLegend: "Počet členů",
+    leftAxisLegend: "Zdroj",
   });
-
-  const sumOthers = (metric: any)=> {
-    return sum(
-      Object.keys(metric)
-        .filter((key) => key !== "date" && !selectedPackages.find(p => p.name.includes(key)))
-        .map((key) => metric[key]),
-    );
-  }
 
   const PackageTooltip = ({ id, label, value, ...props }: any) => {
     const theme = useTheme();
@@ -46,10 +37,7 @@ export function ActiveMembersByPackage() {
 
         <div className="mt-4 flex flex-col">
           {Object.keys(props.data)
-            .filter(
-              (key) =>
-                key !== "date" && key !== "Ostatní" && !selectedPackages.find(p => p.name.includes(key)),
-            )
+            .filter((key) => key !== "date")
             .sort()
             .map((key) => (
               <span key={key}>
@@ -61,25 +49,15 @@ export function ActiveMembersByPackage() {
     );
   }
 
-  if (metrics.isLoading) return null;
-
-  const getCountsFromData = (m: {}) => {
-    return Object.entries(m).map(e => [e[0], (e[0] == "date") ? e[1] : (e[1] as any).total_count])
-  }
-
-  const data = metrics.data.map((m: any) => ({
-      ...Object.fromEntries(getCountsFromData(m).filter(([key]) => !key.startsWith("Tovaryš"))),
-      Ostatní: sumOthers(Object.fromEntries(getCountsFromData(m))),
-      "Tovaryš": Object.values(Object.fromEntries(getCountsFromData(m).filter(([key]) => key.startsWith("Tovaryš")))).reduce((sum: number, value) => sum + (value as number), 0) ?? 0
-  }));
+  if (metrics.isLoading || keys.isLoading) return null;
 
   return (
     <div className="w-full h-96">
       {/* @ts-expect-error */}
       <ResponsiveBar
         {...chartCommonProps}
-        data={data}
-        keys={["Ostatní", ...selectedPackages.map((p) => p.name)]}
+        data={metrics.data}
+        keys={keys.data}
         indexBy="date"
         axisBottom={{
           format: (value) =>

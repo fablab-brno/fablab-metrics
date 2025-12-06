@@ -106,9 +106,13 @@ def calculate_active_members_by_package(date_window):
             # e.g if a member has overlapping packages Mistr and Open Hours,
             # it'll be accounted only for Mistr
             sql = f"""
-            SELECT 
+            SELECT
                 package,
-                COUNT(DISTINCT membership.member_id) 
+                SUM(CASE WHEN gender = 'Muž' THEN 1 ELSE 0 END) AS male,
+                SUM(CASE WHEN gender = 'Žena' THEN 1 ELSE 0 END) AS female,
+                SUM(CASE WHEN gender = 'Jiné' THEN 1 ELSE 0 END) AS other,
+                SUM(CASE WHEN gender = 'Neuvedeno' THEN 1 ELSE 0 END) AS none,
+                COUNT(DISTINCT membership.member_id) as total_count
             FROM membership 
             INNER JOIN (
                 SELECT
@@ -128,7 +132,13 @@ def calculate_active_members_by_package(date_window):
             res = db.execute(sql, {"date_start": date_start, "date_end": date_end})
             yield {
                 "date": date_start,
-                **{package: count for package, count in res.fetchall()},
+                **{package: {
+                    "male_count": male_count,
+                    "female_count": female_count,
+                    "other_count": other_count,
+                    "none_count": none_count,
+                    "total_count": total_count
+                } for package, male_count, female_count, other_count, none_count, total_count in res.fetchall()},
             }
 
 

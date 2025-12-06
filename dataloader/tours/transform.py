@@ -75,7 +75,6 @@ def calculate_tours_members_ratios_and_counts(date_window):
                 "purchased_memberships": len(purchased_membership)
             }
 
-    pass
 
 def get_memberships_in_three_months(date_window):
     for date_start, date_end in date_window():
@@ -118,4 +117,35 @@ def get_memberships_in_three_months(date_window):
                 # "average_members": round(sum(members_count) / len(members_count), 1) if members_count else members_count,
                 "non_members": sum(visitors_count) - sum(members_count),
                 # "average_non_members": round(sum(non_members_count) / len(non_members_count), 1) if non_members_count else non_members_count
+            }
+
+
+def get_info_from_of_tours(date_window):
+    last_date = datetime.today().replace(day=1) + relativedelta(months=1)
+
+    for date_start, date_end in date_window():
+        if date_end > last_date:
+            break
+
+        with get_db() as db:
+            res = db.execute(
+                """
+                SELECT
+                    COUNT(info_source), info_source
+                FROM 
+                    tours_reservations
+                WHERE 
+                    date_start <= :date_end
+                    AND date_end >= :date_start
+                GROUP BY info_source
+                """,
+                {"date_start": date_start, "date_end": date_end},
+            )
+
+            yield {
+                "date": date_start,
+                **{
+                    source: count
+                    for count, source in res.fetchall()
+                },
             }

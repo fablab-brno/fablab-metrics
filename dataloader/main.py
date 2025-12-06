@@ -6,7 +6,7 @@ from os import path
 
 from dateutil.relativedelta import relativedelta
 
-from dates import monthly, yearly, tours_monthly, tours_yearly
+from dates import monthly, yearly
 from members.extract import (
     extract_member_trainings,
     extract_training_courses,
@@ -25,8 +25,8 @@ from resources.transform import calculate_resource_usage, calculate_member_visit
 from resources.write import write_resources
 
 from tours.extract import extract_tours_reservations_logs, extract_members_emails
-from tours.write import write_tours_reservations
-from tours.transform import calculate_tours_members_ratios_and_counts
+from tours.transform import calculate_tours_members_ratios_and_counts, get_info_from_of_tours
+from tours.write import write_tours_sources
 
 from settings import get_settings
 
@@ -83,8 +83,8 @@ if __name__ == "__main__":
         date_end = datetime.today().replace(day=1)
         date_start = date_end + relativedelta(months=-1)
 
-        extract_resource_logs(date_start=date_start, date_end=date_end)
-        extract_tours_reservations_logs(date_start=date_start, date_end=date_end, lang="cs")
+    extract_resource_logs(date_start=date_start, date_end=date_end)
+    extract_tours_reservations_logs(date_start=date_start, date_end=date_end, lang="cs")
 
     extract_resources()
     extract_training_courses()
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     write_training_courses()
     write_resources()
-    write_tours_reservations()
+    write_tours_sources()
 
     with open(os.path.join(settings.data_path, "status.json"), "w") as jsonfile:
         json.dump(
@@ -118,7 +118,8 @@ if __name__ == "__main__":
         "trainings_by_date": calculate_trainings_by_date,
         "trainings_by_member": calculate_trainings_by_member,
         # Tours
-        "tours_members_to_reservations": calculate_tours_members_ratios_and_counts
+        "tours_members_to_reservations": calculate_tours_members_ratios_and_counts,
+        "tours_info_source": get_info_from_of_tours,
     }
 
     granularity = {

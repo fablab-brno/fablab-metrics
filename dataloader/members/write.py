@@ -16,7 +16,7 @@ def write_training_courses():
         filename = path.join(settings.data_path, "training_courses.json")
         os.makedirs(path.dirname(filename), exist_ok=True)
 
-        with open(filename, "w") as jsonfile:
+        with open(filename, "w", encoding="utf-8") as jsonfile:
             json.dump(list(training_courses), jsonfile, ensure_ascii=False)
 
 
@@ -28,5 +28,5 @@ def write_packages():
         filename = path.join(settings.data_path, "packages.json")
         os.makedirs(path.dirname(filename), exist_ok=True)
 
-        with open(filename, "w") as jsonfile:
+        with open(filename, "w", encoding="utf-8") as jsonfile:
             json.dump(list(packages), jsonfile, ensure_ascii=True)

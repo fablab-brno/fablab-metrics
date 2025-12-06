@@ -9,6 +9,8 @@ import { TrainingsByMember } from "fablab-metrics/components/metrics/TrainingsBy
 import { MembersWithoutPackage } from "fablab-metrics/ui/MembersWithoutPackage";
 import { SectionHeading } from "fablab-metrics/ui/SectionHeading";
 import { TrainingsByMemberInfoDialog } from "fablab-metrics/ui/TrainingsByMemberInfoDialog";
+import { ToursByInformationSource } from "fablab-metrics/components/metrics/ToursByInformationSource";
+import { PaidMembershipsByGender } from "fablab-metrics/components/metrics/PaidMembershipsByGender";
 
 export default function Page() {
   return (
@@ -23,6 +25,9 @@ export default function Page() {
 
       <SectionHeading>Aktivní členství</SectionHeading>
       <ActiveMembersByPackage />
+
+      <SectionHeading>Placená členství podle genderu</SectionHeading>
+      <PaidMembershipsByGender />
 
       <SectionHeading>Přechody mezi členstvím</SectionHeading>
       <PackageChangesByMonth />
@@ -47,6 +52,9 @@ export default function Page() {
 
       <SectionHeading>Počet účastníků Fablab Tour a registrovaných členů</SectionHeading>
       <ToursMembersToReservations />
+
+      <SectionHeading>Jak se lidé dozvěděli o FabLabu</SectionHeading>
+      <ToursByInformationSource />
     </main>
   );
 }
