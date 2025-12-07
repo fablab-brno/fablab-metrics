@@ -1,15 +1,22 @@
 {
-	"provider": "node",
+	"provider": "python",
 	"packages": {
 		"node": "24",
 		"python": "3.13"
 	},
 	"steps": {
 		"install": {
-			"commands": ["...", "copy ./pyproject.toml ./pyproject.toml", "copy ./poetry.lock ./poetry.lock", "ls", "echo app content:", "ls /app", "poetry install"]
+			"commands": ["..."]
+		},
+		"python-install": {
+			"inputs": [{ "step": "install" }],
+		  "commands": [
+			"pip install poetry",
+			"poetry install"
+		  ]
 		},
 		"build": {
-			"inputs": [{ "step": "install" }],
+			"inputs": [{ "step": "python-install" }],
 			"commands": ["..."]
 		}
 	}
