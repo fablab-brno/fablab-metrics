@@ -5,17 +5,15 @@
 		"python": "3.13"
 	},
 	"steps": {
-		"install": {
-			"commands": ["..."]
-		},
 		"python-install": {
-			"inputs": [{ "step": "install" }],
-		  "commands": [
-			  { "src": "pyproject.toml", "dest": "pyproject.toml" },
-			  { "src": "package.json", "dest": "package.json" },
-			"pip install poetry",
-			"poetry install"
-		  ]
+			"inputs": [
+				{ "step": "install" }
+			],
+			"commands": [
+				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
+				"pip install poetry",
+				"poetry install"
+			]
 		}
 	}
 }
