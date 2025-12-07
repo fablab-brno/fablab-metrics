@@ -11,6 +11,8 @@
 		"python-install": {
 			"inputs": [{ "step": "install" }],
 		  "commands": [
+			  { "src": "pyproject.toml", "dest": "pyproject.toml" },
+			  "ls",
 			"pip install poetry",
 			"poetry install"
 		  ]
