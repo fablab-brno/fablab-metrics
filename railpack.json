@@ -6,7 +6,7 @@
 	},
 	"steps": {
 		"install": {
-			"commands": ["...", "ls", "echo app content:", "ls /app"]
+			"commands": ["...", "copy ./pyproject.toml ./pyproject.toml", "copy ./poetry.lock ./poetry.lock", "ls", "echo app content:", "ls /app", "poetry install"]
 		},
 		"build": {
 			"inputs": [{ "step": "install" }],
