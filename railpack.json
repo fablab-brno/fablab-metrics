@@ -13,14 +13,9 @@
 		  "commands": [
 			  { "src": "pyproject.toml", "dest": "pyproject.toml" },
 			  { "src": "package.json", "dest": "package.json" },
-			  "ls",
 			"pip install poetry",
 			"poetry install"
 		  ]
-		},
-		"build": {
-			"inputs": [{ "step": "python-install" }],
-			"commands": ["..."]
 		}
 	}
 }
