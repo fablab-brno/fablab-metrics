@@ -1,5 +1,5 @@
 {
-	"provider": "python",
+	"provider": "node",
 	"packages": {
 		"node": "24",
 		"python": "3.13"
