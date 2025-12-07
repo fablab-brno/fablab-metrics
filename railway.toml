@@ -1,0 +1,3 @@
+[build]
+builder = "railpack"
+buildCommand = "poetry install"
