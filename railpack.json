@@ -16,16 +16,12 @@
 				"poetry show -v",
 				"poetry env info -p"
 			]
-		},
-		"install": {
-			"commands": ["..."]
-		},
-		"build": {
-		  "inputs": [
-			  "...",
-			  { "step": "python-install" }
-		  ],
-		  "commands": ["..."]
 		}
+	},
+	"deploy": {
+		"inputs": [
+			"...",
+			{ "step": "python-install" }
+		]
 	}
 }
