@@ -10,6 +10,10 @@
 			"...",
 			{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 			{ "src": "poetry.lock", "dest": "poetry.lock" },
+			"apt-get update",
+			"apt-get install curl",
+			"mise uninstall poetry@2.2.1",
+			"mise install poetry@2.2.1",
 			"poetry install"
 		]
 	}
