@@ -2,19 +2,14 @@
 	"provider": "node",
 	"packages": {
 		"node": "24",
-		"python": "3.13",
+		"python": "3.11",
 		"poetry": "latest"
 	},
 	"steps": {
 		"python-install": {
 			"commands": [
 				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
-				"pip install poetry",
-				"poetry config virtualenvs.in-project true",
-				"poetry config virtualenvs.path ./dataloader/.venv",
-				"poetry install",
-				"poetry show -v",
-				"poetry env info -p"
+				{ "src": "poetry.lock", "dest": "poetry.lock" }
 			]
 		}
 	},
