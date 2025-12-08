@@ -10,16 +10,21 @@
 				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 				"pip install poetry",
 				"poetry config virtualenvs.in-project true",
+				"poetry config virtualenvs.path ./dataloader/.venv",
 				"poetry install",
 				"poetry show -v",
 				"poetry env info -p"
 			]
 		},
 		"install": {
-			"inputs": [
-				{ "step": "python-install" }
-			],
 			"commands": ["..."]
+		},
+		"build": {
+		  "inputs": [
+			  "...",
+			  { "step": "python-install" }
+		  ],
+		  "commands": ["..."]
 		}
 	}
 }
