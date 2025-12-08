@@ -1,5 +1,5 @@
 {
-	"provider": "python",
+	"provider": "node",
 	"packages": {
 		"node": "24",
 		"python": "3.13"
@@ -9,7 +9,10 @@
 			"commands": [
 				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 				"pip install poetry",
-				"poetry install"
+				"poetry config virtualenvs.in-project true",
+				"poetry install",
+				"poetry show -v",
+				"poetry env info -p"
 			]
 		},
 		"install": {
