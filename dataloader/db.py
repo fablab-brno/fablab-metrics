@@ -25,7 +25,7 @@ def get_db_connection():
             package text,
             date_start text,
             date_end text,
-            package_id integer
+            package_id integer,
             gender text
         )
         """,
