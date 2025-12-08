@@ -12,11 +12,11 @@
 				"poetry install"
 			]
 		},
-		"build": {
+		"install": {
 			"inputs": [
-				{ "step": "install" },
 				{ "step": "python-install" }
-			]
+			],
+			"commands": ["..."]
 		}
 	}
 }
