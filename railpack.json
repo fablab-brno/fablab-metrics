@@ -6,9 +6,6 @@
 	},
 	"steps": {
 		"python-install": {
-			"inputs": [
-				{ "step": "install" }
-			],
 			"commands": [
 				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 				"pip install poetry",
@@ -16,7 +13,10 @@
 			]
 		},
 		"build": {
-			"inputs": [{ "step": "python-install" }]
+			"inputs": [
+				{ "step": "install" },
+				{ "step": "python-install" }
+			]
 		}
 	}
 }
