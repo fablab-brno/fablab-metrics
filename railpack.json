@@ -12,5 +12,11 @@
 			{ "src": "poetry.lock", "dest": "poetry.lock" },
 			"poetry install"
 		]
+	},
+	"install": {
+		"inputs": [
+			"...",
+			{ "step": "python-install" }
+		]
 	}
 }
