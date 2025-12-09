@@ -7,7 +7,6 @@
 	},
 	"python-install": {
 		"commands": [
-			"...",
 			{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 			{ "src": "poetry.lock", "dest": "poetry.lock" },
 			"poetry install"
