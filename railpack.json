@@ -7,7 +7,6 @@
 	},
 	"deploy": {
 		"commands": [
-			"...",
 			{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 			{ "src": "poetry.lock", "dest": "poetry.lock" },
 			"apt-get update",
@@ -18,7 +17,9 @@
 			"poetry config virtualenvs.in-project true",
 			"poetry config virtualenvs.path /app/dataloader",
 			"poetry config virtualenvs.create false",
-			"poetry install"
+			"poetry install",
+
+			"..."
 		]
 	}
 }
