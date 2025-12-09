@@ -5,21 +5,16 @@
 		"python": "3.11",
 		"poetry": "2.2.1"
 	},
-	"deploy": {
+	"install": {
 		"commands": [
+			"...",
 			{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 			{ "src": "poetry.lock", "dest": "poetry.lock" },
-			"apt-get update",
-			"apt-get install curl",
-			"mise uninstall poetry@2.2.1",
-			"mise install poetry@2.2.1",
 			"poetry config python.installation-dir /app/dataloader",
 			"poetry config virtualenvs.in-project true",
 			"poetry config virtualenvs.path /app/dataloader",
 			"poetry config virtualenvs.create false",
-			"poetry install",
-
-			"..."
+			"poetry install"
 		]
 	}
 }
