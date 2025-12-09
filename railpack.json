@@ -14,6 +14,7 @@
 			"apt-get install curl",
 			"mise uninstall poetry@2.2.1",
 			"mise install poetry@2.2.1",
+			"poetry config virtualenvs.create false",
 			"poetry install"
 		]
 	}
