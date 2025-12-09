@@ -5,17 +5,19 @@
 		"python": "3.11",
 		"poetry": "2.2.1"
 	},
-	"python-install": {
-		"commands": [
-			{ "src": "pyproject.toml", "dest": "pyproject.toml" },
-			{ "src": "poetry.lock", "dest": "poetry.lock" },
-			"poetry install"
-		]
-	},
-	"install": {
-		"inputs": [
-			"...",
-			{ "step": "python-install" }
-		]
+	"steps": {
+		"python-install": {
+			"commands": [
+				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
+				{ "src": "poetry.lock", "dest": "poetry.lock" },
+				"poetry install"
+			]
+		},
+		"install": {
+			"inputs": [
+				"...",
+				{ "step": "python-install" }
+			]
+		}
 	}
 }
