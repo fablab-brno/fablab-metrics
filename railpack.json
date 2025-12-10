@@ -12,8 +12,7 @@
 				{ "src": "poetry.lock", "dest": "poetry.lock" },
 				"poetry config virtualenvs.in-project true",
 				"poetry install",
-				"ls -l",
-				"ls dataloader -l"
+				"ls -l"
 			]
 		},
 		"install": {
