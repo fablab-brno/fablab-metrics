@@ -11,7 +11,12 @@
 				{ "src": "pyproject.toml", "dest": "pyproject.toml" },
 				{ "src": "poetry.lock", "dest": "poetry.lock" },
 				"poetry config virtualenvs.in-project true",
-				"poetry install"
+				"poetry install",
+				"ls -l",
+				"ls dataloader -l"
+			],
+			"deployOutputs": [
+
 			]
 		},
 		"install": {
