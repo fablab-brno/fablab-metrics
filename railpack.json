@@ -14,9 +14,6 @@
 				"poetry install",
 				"ls -l",
 				"ls dataloader -l"
-			],
-			"deployOutputs": [
-
 			]
 		},
 		"install": {
