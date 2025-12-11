@@ -135,6 +135,8 @@ if __name__ == "__main__":
     write_packages()
 
     from db import get_db
+    import os
+    from pathlib import Path
 
     with get_db() as db:
         res = db.execute("SELECT * FROM membership")
