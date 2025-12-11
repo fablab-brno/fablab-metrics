@@ -21,6 +21,11 @@
 				"...",
 				{ "step": "python-install" },
 				{ "src": "/app/.venv", "dest": "/app/.venv" }
+			],
+			"commands": [
+				"...",
+				"ls /app",
+				"ls /app/.venv"
 			]
 		}
 	}
