@@ -12,13 +12,14 @@
 				{ "src": "poetry.lock", "dest": "poetry.lock" },
 				"poetry config virtualenvs.in-project true",
 				"poetry install",
-				"ls -l"
+				"ls /app -l"
 			]
 		},
 		"install": {
 			"inputs": [
 				"...",
-				{ "step": "python-install" }
+				{ "step": "python-install" },
+				{ "src": "/app/.venv", "dest": "/app/.venv" }
 			]
 		}
 	}
