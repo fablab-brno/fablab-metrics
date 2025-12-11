@@ -15,20 +15,31 @@
 				"ls /app",
 				"ls /app/.venv"
 			]
-		},
-		"install": {
-			"inputs": [
-				{ "step": "python-install" },
-				{ "src": "/app/.venv", "dest": "/app/.venv" },
-				"..."
-			],
-			"commands": [
-				"apt-get update",
-				"apt-get install curl",
-				"mise uninstall poetry@2.2.1",
-				"mise install poetry@2.2.1",
-				"..."
-			]
 		}
+	},
+	"deploy": {
+		"inputs": [
+			"...",
+			{
+				"step": "packages:mise",
+				"include": [
+					"/mise/shims",
+					"/mise/installs"
+				]
+			},
+			{
+				"step": "build",
+				"include": ["."]
+			},
+			{ "step": "python-install" },
+			{ "src": "/app/.venv", "dest": "/app/.venv" }
+		],
+		"commands": [
+			"apt-get update",
+			"apt-get install curl",
+			"mise uninstall poetry@2.2.1",
+			"mise install poetry@2.2.1",
+			"..."
+		]
 	}
 }
