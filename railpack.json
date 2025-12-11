@@ -18,9 +18,9 @@
 		},
 		"install": {
 			"inputs": [
-				"...",
 				{ "step": "python-install" },
-				{ "src": "/app/.venv", "dest": "/app/.venv" }
+				{ "src": "/app/.venv", "dest": "/app/.venv" },
+				"..."
 			],
 			"commands": [
 				"...",
