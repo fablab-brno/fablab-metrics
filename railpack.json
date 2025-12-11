@@ -23,9 +23,11 @@
 				"..."
 			],
 			"commands": [
-				"...",
-				"ls /app",
-				"ls /app/.venv"
+				"apt-get update",
+				"apt-get install curl",
+				"mise uninstall poetry@2.2.1",
+				"mise install poetry@2.2.1",
+				"..."
 			]
 		}
 	}
