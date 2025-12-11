@@ -133,28 +133,3 @@ if __name__ == "__main__":
             write_dataset(metric, granularity_label, fn(data_window))
 
     write_packages()
-
-    from db import get_db
-    import os
-    from pathlib import Path
-
-    with get_db() as db:
-        res = db.execute("SELECT * FROM membership")
-
-        memberships = []
-
-        for member_id, package, date_start, date_end, package_id, gender in res.fetchall():
-            memberships.append({
-                "member_id": member_id,
-                "gender": gender,
-                "package": package,
-                "date_start": date_start,
-                "date_end": date_end,
-                "package_id": package_id
-            })
-
-        with open(Path(os.getcwd(), "memberships.csv"), "w", encoding="utf-8") as csv_file:
-            csv_file.write(";".join(memberships[0].keys()) + "\n")
-
-            for row in memberships:
-                csv_file.write(";".join([str(row[col]) for col in row]) + "\n")

@@ -11,6 +11,14 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
+GENDER_OPTIONS = {
+    "male": "Muž",
+    "female": "Žena",
+    "other": "Jiné",
+    "-": "Neuvedeno",
+}
+
+
 def extract_member_packages():
     with FabmanSession() as s:
         members = s.list_members("memberPackages")
@@ -32,7 +40,7 @@ def extract_member_packages():
                     "date_start": date_start,
                     "date_end": date_end,
                     "package_id": package_id,
-                    "gender": member.get("gender") or "-"
+                    "gender": GENDER_OPTIONS.get(member.get("gender") or "-") or "Neuvedeno"
                 })
 
             member_id = member["id"]
