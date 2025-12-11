@@ -12,7 +12,8 @@
 				{ "src": "poetry.lock", "dest": "poetry.lock" },
 				"poetry config virtualenvs.in-project true",
 				"poetry install",
-				"ls /app -l"
+				"ls /app",
+				"ls /app/.venv"
 			]
 		},
 		"install": {
