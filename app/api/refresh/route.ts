@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   }
 
   const output = await new Promise((resolve, reject) =>
-    exec("poetry run python dataloader/main.py", (err, stdout, stderr) => {
+    exec(".venv/bin/python3 dataloader/main.py", (err, stdout, stderr) => {
       if (err) {
         console.error(err);
         reject({
