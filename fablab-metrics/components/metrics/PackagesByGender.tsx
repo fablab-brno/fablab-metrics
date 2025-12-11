@@ -120,7 +120,7 @@ export function PackagesByGender() {
         }
       }
     )
-
+  console.debug(data)
   return (
     <div className="w-full h-96">
       {/* @ts-expect-error */}
