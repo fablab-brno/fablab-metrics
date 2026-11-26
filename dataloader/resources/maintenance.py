@@ -1,8 +1,9 @@
 """
-Machine maintenance metrics derived from `resource_outages`.
+Machine maintenance metrics.
 
-An outage is a period when a machine had state "locked" in Fabman. Outages
-still in progress are counted until "now".
+An outage is the period between a `resourceDisabled` log and the next
+`resourceEnabled` log of the same machine in Fabman. Outages still in progress
+(machine is locked now) are counted until "now".
 """
 
 import json
@@ -30,42 +31,103 @@ def _hours(delta):
     return delta.total_seconds() / 3600
 
 
-def _load_outages(now):
+def _load_resources():
     with get_db() as db:
         rows = db.execute(
             """
-            SELECT
-                o.id, o.resource_id, o.date_start, o.date_end, o.notes,
-                r.name, COALESCE(r.category, '') AS category, r.sla_hours
-            FROM resource_outages AS o
-            JOIN resources AS r ON r.id = o.resource_id
-            WHERE r.type = 'machine'
-            ORDER BY o.date_start
+            SELECT id, name, COALESCE(category, '') AS category, state, sla_hours
+            FROM resources
+            WHERE type = 'machine'
+            """
+        ).fetchall()
+    return {row["id"]: dict(row) for row in rows}
+
+
+def _load_events():
+    with get_db() as db:
+        return db.execute(
+            """
+            SELECT resource_id, type, created_at, stopped_at, notes
+            FROM resource_state_events
+            WHERE created_at IS NOT NULL
+            ORDER BY resource_id, created_at, id
             """
         ).fetchall()
 
+
+def build_outages(events, resources, now):
+    """
+    Pairs disable/enable logs into outages.
+
+    - A disable while an outage is already open only adds its notes.
+    - An enable without an open outage is ignored.
+    - The end of an outage is the next enable log. Without one, `stoppedAt` of
+      the disable log is used. Without either, the outage is ongoing if the
+      machine is locked now, otherwise its end is unknown and it is dropped.
+    """
     outages = []
-    for row in rows:
-        date_end = _parse(row["date_end"])
-        outages.append(
+    open_by_resource = {}
+
+    def close(resource_id, date_end):
+        outage = open_by_resource.pop(resource_id)
+        outage["date_end"] = date_end
+        outages.append(outage)
+
+    for event in events:
+        resource_id = event["resource_id"]
+        if resource_id not in resources:
+            continue
+
+        created_at = _parse(event["created_at"])
+        current = open_by_resource.get(resource_id)
+
+        if event["type"] == "resourceDisabled":
+            if current is None:
+                open_by_resource[resource_id] = {
+                    "resource_id": resource_id,
+                    "date_start": created_at,
+                    "stopped_at": _parse(event["stopped_at"]),
+                    "notes": [event["notes"]] if event["notes"] else [],
+                }
+            elif event["notes"] and event["notes"] not in current["notes"]:
+                current["notes"].append(event["notes"])
+        elif event["type"] == "resourceEnabled" and current is not None:
+            close(resource_id, created_at)
+
+    for resource_id, outage in list(open_by_resource.items()):
+        stopped_at = outage["stopped_at"]
+        if stopped_at is not None and stopped_at > outage["date_start"]:
+            close(resource_id, stopped_at)
+        elif resources[resource_id]["state"] == "locked":
+            close(resource_id, None)
+        else:
+            open_by_resource.pop(resource_id)
+
+    result = []
+    for o in outages:
+        resource = resources[o["resource_id"]]
+        result.append(
             {
-                "id": row["id"],
-                "resource_id": row["resource_id"],
-                "name": row["name"],
-                "category": row["category"] or "Bez kategorie",
-                "notes": row["notes"] or "",
-                "date_start": _parse(row["date_start"]),
-                "date_end": date_end,
-                "effective_end": date_end or now,
-                "sla_hours": row["sla_hours"] or settings.machine_sla_hours,
+                "resource_id": o["resource_id"],
+                "name": resource["name"],
+                "category": resource["category"] or "Bez kategorie",
+                "notes": " | ".join(o["notes"]),
+                "date_start": o["date_start"],
+                "date_end": o["date_end"],
+                "effective_end": o["date_end"] or now,
+                "sla_hours": resource["sla_hours"] or settings.machine_sla_hours,
             }
         )
-    return outages
+    return sorted(result, key=lambda o: o["date_start"])
+
+
+def _load_outages(now):
+    return build_outages(_load_events(), _load_resources(), now)
 
 
 def _tracking_since():
     with get_db() as db:
-        value = db.execute("SELECT MIN(checked_at) FROM resource_state_log").fetchone()[0]
+        value = db.execute("SELECT MIN(created_at) FROM resource_state_events").fetchone()[0]
     return _parse(value)
 
 
@@ -197,6 +259,25 @@ def write_machine_status(recent_limit=30):
         key=lambda o: o["hours"],
         reverse=True,
     )
+
+    # Machines locked now whose disable log is missing (e.g. locked before
+    # Fabman started writing these logs): start and duration are unknown.
+    known = {o["resource_id"] for o in current}
+    for resource in _load_resources().values():
+        if resource["state"] == "locked" and resource["id"] not in known:
+            current.append(
+                {
+                    "resource_id": resource["id"],
+                    "name": resource["name"],
+                    "category": resource["category"] or "Bez kategorie",
+                    "notes": "",
+                    "date_start": None,
+                    "date_end": None,
+                    "hours": None,
+                    "sla_hours": resource["sla_hours"] or settings.machine_sla_hours,
+                    "sla_breached": None,
+                }
+            )
     recent = [
         serialize(o)
         for o in sorted(

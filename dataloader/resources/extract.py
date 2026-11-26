@@ -34,7 +34,6 @@ def extract_resources():
             "type": dot_path(resource, "metadata.METRICS_EQUIPMENT_TYPE"),
             "state": resource.get("state") or "",
             "sla_hours": parse_float(dot_path(resource, "metadata.METRICS_SLA_HOURS")),
-            "maintenance_notes": resource.get("maintenanceNotes") or "",
         }
         for resource in all_resources
     ]
@@ -51,63 +50,44 @@ def extract_resources():
             resources,
         )
 
-    record_resource_states(resources)
 
 
-def record_resource_states(resources, checked_at=None):
-    """
-    Stores a snapshot of resource states and updates outages.
+def extract_resource_state_events(date_start, date_end):
+    """Stores resourceDisabled / resourceEnabled logs used for machine outages."""
+    with FabmanSession() as s:
+        logs = s.list_resource_state_logs(date_start, date_end)
 
-    A machine is out of order while its Fabman state is "locked". An outage
-    starts at the first snapshot that sees the resource locked and ends at the
-    first snapshot that sees it active again, so its precision equals how often
-    the dataloader runs.
-    """
-    checked_at = (checked_at or datetime.now(timezone.utc)).strftime("%Y-%m-%d %H:%M:%S")
+    events = [
+        {
+            "id": log["id"],
+            "resource_id": log["resource"],
+            "type": log["type"],
+            "created_at": to_db_datetime(log.get("createdAt")),
+            "stopped_at": to_db_datetime(log.get("stoppedAt")),
+            "notes": log.get("notes") or "",
+        }
+        for log in logs
+        if log.get("type") in ("resourceDisabled", "resourceEnabled")
+    ]
 
     with get_db() as db:
-        open_outages = {
-            row["resource_id"]: row["id"]
-            for row in db.execute(
-                "SELECT id, resource_id FROM resource_outages WHERE date_end IS NULL"
-            ).fetchall()
-        }
+        db.executemany(
+            """
+            REPLACE INTO resource_state_events (id, resource_id, type, created_at, stopped_at, notes)
+            VALUES (:id, :resource_id, :type, :created_at, :stopped_at, :notes)
+            """,
+            events,
+        )
 
-        for resource in resources:
-            db.execute(
-                """
-                INSERT INTO resource_state_log (resource_id, checked_at, state, maintenance_notes)
-                VALUES (?, ?, ?, ?)
-                """,
-                (resource["id"], checked_at, resource["state"], resource["maintenance_notes"]),
-            )
 
-            outage_id = open_outages.pop(resource["id"], None)
-
-            if resource["state"] == "locked":
-                if outage_id is None:
-                    db.execute(
-                        "INSERT INTO resource_outages (resource_id, date_start, notes) VALUES (?, ?, ?)",
-                        (resource["id"], checked_at, resource["maintenance_notes"]),
-                    )
-                elif resource["maintenance_notes"]:
-                    db.execute(
-                        "UPDATE resource_outages SET notes = ? WHERE id = ?",
-                        (resource["maintenance_notes"], outage_id),
-                    )
-            elif outage_id is not None:
-                db.execute(
-                    "UPDATE resource_outages SET date_end = ? WHERE id = ?",
-                    (checked_at, outage_id),
-                )
-
-        # Resources that disappeared from the listing (archived/deleted) are
-        # no longer out of order from the point of view of the metrics.
-        for outage_id in open_outages.values():
-            db.execute(
-                "UPDATE resource_outages SET date_end = ? WHERE id = ?",
-                (checked_at, outage_id),
-            )
+def to_db_datetime(value):
+    """Fabman ISO timestamp (e.g. "2024-03-01T10:00:00.000Z") -> naive UTC string."""
+    if not value:
+        return None
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is not None:
+        parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+    return parsed.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def parse_float(value):

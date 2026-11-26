@@ -29,9 +29,9 @@ Resource metrics are configured using following resource metadata:
 
 - `METRICS_SLA_HOURS` - Optional per-machine override of `MACHINE_SLA_HOURS`.
 
-Machine maintenance metrics (tab "Údržba strojů") use the Fabman resource state: a machine is out of order while its
-state is `locked`. Fabman API keeps no history of states, so each dataloader run stores a snapshot and opens/closes
-outages. Outage times are therefore only as precise as the dataloader schedule; run `/api/refresh` at least daily.
+Machine maintenance metrics (tab "Údržba strojů") are reconstructed from Fabman resource logs of type
+`resourceDisabled` and `resourceEnabled`: an outage lasts from disabling a machine until it is enabled again. The whole
+history of these logs is fetched on every dataloader run. Only resources with `METRICS_EQUIPMENT_TYPE=machine` count.
 
 Training courses metrics are configured using following resource metadata:
 

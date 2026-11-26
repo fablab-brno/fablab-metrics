@@ -92,26 +92,19 @@ def get_db_connection():
         )
         """,
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_tours_reservations_id ON tours_reservations (id)",
-        # Fabman keeps no history of resource states, so every dataloader run
-        # stores a snapshot of the current state and opens/closes outages.
+        # Fabman resource logs of type resourceDisabled / resourceEnabled.
+        # Machine outages are reconstructed from them.
         """
-        CREATE TABLE IF NOT EXISTS resource_state_log(
+        CREATE TABLE IF NOT EXISTS resource_state_events(
+            id integer,
             resource_id integer,
-            checked_at text, -- UTC, "%Y-%m-%d %H:%M:%S"
-            state text,
-            maintenance_notes text default ''
-        )
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS resource_outages(
-            id integer PRIMARY KEY AUTOINCREMENT,
-            resource_id integer,
-            date_start text, -- UTC, "%Y-%m-%d %H:%M:%S"
-            date_end text, -- NULL while the resource is still out of order
+            type text, -- "resourceDisabled", "resourceEnabled"
+            created_at text, -- UTC, "%Y-%m-%d %H:%M:%S"
+            stopped_at text, -- UTC, "%Y-%m-%d %H:%M:%S"
             notes text default ''
         )
         """,
-        "CREATE INDEX IF NOT EXISTS idx_resource_outages_resource_id ON resource_outages (resource_id)",
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_resource_state_events_id ON resource_state_events (id)",
     ]
 
     cursor = db.cursor()

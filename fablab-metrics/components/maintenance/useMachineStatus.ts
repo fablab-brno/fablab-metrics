@@ -5,11 +5,12 @@ export type Outage = {
   name: string;
   category: string;
   notes: string;
-  date_start: string;
+  // null when the machine is locked but Fabman has no disable log for it
+  date_start: string | null;
   date_end: string | null;
-  hours: number;
+  hours: number | null;
   sla_hours: number;
-  sla_breached: boolean;
+  sla_breached: boolean | null;
 };
 
 export type MachineStatus = {
@@ -28,7 +29,8 @@ export function useMachineStatus() {
   );
 }
 
-export function formatDuration(hours: number) {
+export function formatDuration(hours: number | null) {
+  if (hours == null) return "–";
   if (hours < 48) return `${Math.round(hours)} h`;
   return `${(hours / 24).toLocaleString("cs", { maximumFractionDigits: 1 })} dne`;
 }

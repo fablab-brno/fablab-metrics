@@ -43,7 +43,7 @@ export function OutagesTable({ kind }: { kind: "current" | "recent" }) {
         <tbody>
           {outages.map((o) => (
             <tr
-              key={`${o.resource_id}-${o.date_start}`}
+              key={`${o.resource_id}-${o.date_start ?? "unknown"}`}
               className="border-b border-gray-100 align-top"
             >
               <td className="py-2 pr-4 font-semibold">{o.name}</td>
@@ -56,7 +56,9 @@ export function OutagesTable({ kind }: { kind: "current" | "recent" }) {
                 {formatDuration(o.hours)}
               </td>
               <td className="py-2 pr-4 whitespace-nowrap">
-                {o.sla_breached ? (
+                {o.sla_breached == null ? (
+                  <span className="text-gray-500">neznámé</span>
+                ) : o.sla_breached ? (
                   <span className="text-red-600 font-semibold">
                     ✕ překročeno
                   </span>

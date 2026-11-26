@@ -95,9 +95,10 @@ export function MaintenanceSummary() {
         />
       </div>
       <p className="text-xs text-gray-500 mt-2">
-        Stroj je mimo provoz, když má ve Fabmanu stav „locked“. Data se sbírají
-        od {new Date(s.tracking_since).toLocaleDateString("cs")} a přesnost
-        odpovídá tomu, jak často běží dataloader.
+        Výpadek trvá od vypnutí stroje ve Fabmanu (resourceDisabled) do jeho
+        opětovného zapnutí (resourceEnabled).
+        {s.tracking_since &&
+          ` První záznam je z ${new Date(s.tracking_since).toLocaleDateString("cs")}.`}
       </p>
     </>
   );

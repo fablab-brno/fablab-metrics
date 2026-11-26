@@ -20,7 +20,11 @@ from members.transform import (
     calculate_trainings_by_member,
 )
 from members.write import write_training_courses, write_packages
-from resources.extract import extract_resources, extract_resource_logs
+from resources.extract import (
+    extract_resources,
+    extract_resource_logs,
+    extract_resource_state_events,
+)
 from resources.transform import calculate_resource_usage, calculate_member_visits
 from resources.write import write_resources
 from resources.maintenance import (
@@ -92,6 +96,12 @@ if __name__ == "__main__":
     extract_tours_reservations_logs(date_start=date_start, date_end=date_end, lang="cs")
 
     extract_resources()
+    # Disable/enable logs are few, so the whole history is fetched every run.
+    # That also backfills databases created before these logs were collected.
+    extract_resource_state_events(
+        date_start=date_start_fabman,
+        date_end=datetime.today() + relativedelta(days=1),
+    )
     extract_training_courses()
     member_packages_status = extract_member_packages()
     extract_member_trainings()
