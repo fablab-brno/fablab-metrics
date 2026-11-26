@@ -23,6 +23,11 @@ from members.write import write_training_courses, write_packages
 from resources.extract import extract_resources, extract_resource_logs
 from resources.transform import calculate_resource_usage, calculate_member_visits
 from resources.write import write_resources
+from resources.maintenance import (
+    calculate_machine_downtime,
+    calculate_machine_downtime_by_category,
+    write_machine_status,
+)
 
 from tours.extract import extract_tours_reservations_logs, extract_members_emails
 from tours.transform import calculate_tours_members_ratios_and_counts, get_info_from_of_tours
@@ -94,6 +99,7 @@ if __name__ == "__main__":
 
     write_training_courses()
     write_resources()
+    write_machine_status()
     write_tours_sources()
 
     with open(os.path.join(settings.data_path, "status.json"), "w") as jsonfile:
@@ -114,6 +120,9 @@ if __name__ == "__main__":
         # Resources
         "resources_usage": calculate_resource_usage,
         "member_visits": calculate_member_visits,
+        # Machine maintenance
+        "machine_downtime": calculate_machine_downtime,
+        "machine_downtime_by_category": calculate_machine_downtime_by_category,
         # Trainings
         "trainings_by_date": calculate_trainings_by_date,
         "trainings_by_member": calculate_trainings_by_member,

@@ -18,11 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="cs">
       <body className={inter.className}>
         <DateRangeProvider>
           <MemberPackageFilterProvider>
-            <main className="pt-20">{children}</main>
+            <main className="pt-32">{children}</main>
             <Header />
           </MemberPackageFilterProvider>
         </DateRangeProvider>

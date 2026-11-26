@@ -16,6 +16,7 @@ Following environment variables are used for configuration:
   value.
 - `DATA_PATH` -Path to data directory containing final datasets JSONs (Default: `<cwd>/data`)
 - `DB_PATH` - Path to SQLite database (Default: `<cwd>/metrics.db`)
+- `MACHINE_SLA_HOURS` - Default time limit (in hours) for fixing a machine that is out of order. (Default: `168`)
 
 ## Fabman configuration
 
@@ -25,6 +26,12 @@ Resource metrics are configured using following resource metadata:
   calculate daily visits. Resources with `machine` value are used to calculate resource usage.
 - `METRICS_CATEGORY` - Category name (only for `METRICS_EQUIPMENT_TYPE=machine`), e.g. "3D Printers", to be used when
   calculating resource usage. Multiple resources with the same category name are groupped together.
+
+- `METRICS_SLA_HOURS` - Optional per-machine override of `MACHINE_SLA_HOURS`.
+
+Machine maintenance metrics (tab "Údržba strojů") use the Fabman resource state: a machine is out of order while its
+state is `locked`. Fabman API keeps no history of states, so each dataloader run stores a snapshot and opens/closes
+outages. Outage times are therefore only as precise as the dataloader schedule; run `/api/refresh` at least daily.
 
 Training courses metrics are configured using following resource metadata:
 

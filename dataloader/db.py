@@ -92,12 +92,43 @@ def get_db_connection():
         )
         """,
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_tours_reservations_id ON tours_reservations (id)",
+        # Fabman keeps no history of resource states, so every dataloader run
+        # stores a snapshot of the current state and opens/closes outages.
+        """
+        CREATE TABLE IF NOT EXISTS resource_state_log(
+            resource_id integer,
+            checked_at text, -- UTC, "%Y-%m-%d %H:%M:%S"
+            state text,
+            maintenance_notes text default ''
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS resource_outages(
+            id integer PRIMARY KEY AUTOINCREMENT,
+            resource_id integer,
+            date_start text, -- UTC, "%Y-%m-%d %H:%M:%S"
+            date_end text, -- NULL while the resource is still out of order
+            notes text default ''
+        )
+        """,
+        "CREATE INDEX IF NOT EXISTS idx_resource_outages_resource_id ON resource_outages (resource_id)",
     ]
 
     cursor = db.cursor()
     cursor.executescript(";".join(setup_sqls))
+    migrate_resources_table(cursor)
 
     return db
+
+
+def migrate_resources_table(cursor):
+    """Adds columns introduced after the `resources` table was first created."""
+    columns = {row["name"] for row in cursor.execute("PRAGMA table_info(resources)")}
+
+    if "state" not in columns:
+        cursor.execute("ALTER TABLE resources ADD COLUMN state text default ''")
+    if "sla_hours" not in columns:
+        cursor.execute("ALTER TABLE resources ADD COLUMN sla_hours real")
 
 
 @contextmanager

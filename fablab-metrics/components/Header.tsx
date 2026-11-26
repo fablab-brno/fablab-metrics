@@ -1,9 +1,8 @@
-import { DateRangeDropdown } from "fablab-metrics/ui/DateRangeDropdown";
-import { DateZoomSelector } from "fablab-metrics/ui/DateZoomSelector";
+import { HeaderFilters } from "fablab-metrics/components/HeaderFilters";
+import { Tabs } from "fablab-metrics/components/Tabs";
 import { SettingsDialog } from "fablab-metrics/ui/SettingsDialog";
 import Image from "next/image";
 import React from "react";
-import {MemberPackagesDropdown} from "fablab-metrics/ui/MemberPackagesDropdown";
 
 export function Header() {
   return (
@@ -22,15 +21,12 @@ export function Header() {
             <small className="uppercase text-sm font-bold">Metrics</small>
           </p>
         </div>
-        <div className="justify-self-center flex items-center gap-4">
-          <DateZoomSelector />
-          <DateRangeDropdown />
-          <MemberPackagesDropdown />
-        </div>
+        <HeaderFilters />
         <div className="justify-self-end">
           <SettingsDialog />
         </div>
       </div>
+      <Tabs />
     </div>
   );
 }
