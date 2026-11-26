@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from db import get_db
 from fabman import FabmanSession
 from settings import get_settings
@@ -30,6 +32,8 @@ def extract_resources():
             "name": resource["name"],
             "category": dot_path(resource, "metadata.METRICS_CATEGORY"),
             "type": dot_path(resource, "metadata.METRICS_EQUIPMENT_TYPE"),
+            "state": resource.get("state") or "",
+            "sla_hours": parse_float(dot_path(resource, "metadata.METRICS_SLA_HOURS")),
         }
         for resource in all_resources
     ]
@@ -37,8 +41,57 @@ def extract_resources():
     with get_db() as db:
         db.executemany(
             """
-            INSERT INTO resources (id, name, category, type) VALUES (:id, :name, :category, :type)
-            ON CONFLICT (id) DO UPDATE SET name=excluded.name, category=excluded.category, type=excluded.type
+            INSERT INTO resources (id, name, category, type, state, sla_hours)
+            VALUES (:id, :name, :category, :type, :state, :sla_hours)
+            ON CONFLICT (id) DO UPDATE SET
+                name=excluded.name, category=excluded.category, type=excluded.type,
+                state=excluded.state, sla_hours=excluded.sla_hours
             """,
             resources,
         )
+
+
+
+def extract_resource_state_events(date_start, date_end):
+    """Stores resourceDisabled / resourceEnabled logs used for machine outages."""
+    with FabmanSession() as s:
+        logs = s.list_resource_state_logs(date_start, date_end)
+
+    events = [
+        {
+            "id": log["id"],
+            "resource_id": log["resource"],
+            "type": log["type"],
+            "created_at": to_db_datetime(log.get("createdAt")),
+            "stopped_at": to_db_datetime(log.get("stoppedAt")),
+            "notes": log.get("notes") or "",
+        }
+        for log in logs
+        if log.get("type") in ("resourceDisabled", "resourceEnabled")
+    ]
+
+    with get_db() as db:
+        db.executemany(
+            """
+            REPLACE INTO resource_state_events (id, resource_id, type, created_at, stopped_at, notes)
+            VALUES (:id, :resource_id, :type, :created_at, :stopped_at, :notes)
+            """,
+            events,
+        )
+
+
+def to_db_datetime(value):
+    """Fabman ISO timestamp (e.g. "2024-03-01T10:00:00.000Z") -> naive UTC string."""
+    if not value:
+        return None
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is not None:
+        parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+    return parsed.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def parse_float(value):
+    try:
+        return float(value) if value not in (None, "") else None
+    except (TypeError, ValueError):
+        return None

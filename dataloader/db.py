@@ -92,12 +92,36 @@ def get_db_connection():
         )
         """,
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_tours_reservations_id ON tours_reservations (id)",
+        # Fabman resource logs of type resourceDisabled / resourceEnabled.
+        # Machine outages are reconstructed from them.
+        """
+        CREATE TABLE IF NOT EXISTS resource_state_events(
+            id integer,
+            resource_id integer,
+            type text, -- "resourceDisabled", "resourceEnabled"
+            created_at text, -- UTC, "%Y-%m-%d %H:%M:%S"
+            stopped_at text, -- UTC, "%Y-%m-%d %H:%M:%S"
+            notes text default ''
+        )
+        """,
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_resource_state_events_id ON resource_state_events (id)",
     ]
 
     cursor = db.cursor()
     cursor.executescript(";".join(setup_sqls))
+    migrate_resources_table(cursor)
 
     return db
+
+
+def migrate_resources_table(cursor):
+    """Adds columns introduced after the `resources` table was first created."""
+    columns = {row["name"] for row in cursor.execute("PRAGMA table_info(resources)")}
+
+    if "state" not in columns:
+        cursor.execute("ALTER TABLE resources ADD COLUMN state text default ''")
+    if "sla_hours" not in columns:
+        cursor.execute("ALTER TABLE resources ADD COLUMN sla_hours real")
 
 
 @contextmanager

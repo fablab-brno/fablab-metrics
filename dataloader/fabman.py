@@ -101,6 +101,21 @@ class FabmanSession(Session):
             },
         )
 
+    @persist_to_file("list_resource_state_logs")
+    def list_resource_state_logs(self, date_start, date_end):
+        """Entries written when an admin disables (out of order) or enables a resource."""
+        yield from self.get_all_json(
+            "resource-logs",
+            params={
+                "from": date_start,
+                "until": date_end,
+                "status": "all",
+                "type": ["resourceDisabled", "resourceEnabled"],
+                "space": 3,
+                "order": "asc",
+            },
+        )
+
     @persist_to_file("list_training_courses")
     def list_training_courses(self):
         yield from self.get_all_json(

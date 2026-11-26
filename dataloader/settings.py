@@ -20,6 +20,10 @@ class Settings(BaseSettings):
 
     db_path: str = Field(default=os.path.join(root_dir, "cache", "metrics.db"))
 
+    # Default time limit for fixing a machine that is out of order. Can be
+    # overridden per resource with Fabman metadata `METRICS_SLA_HOURS`.
+    machine_sla_hours: float = Field(default=168)
+
     debug_use_cache: bool = Field(default=False)
 
     model_config = SettingsConfigDict(
