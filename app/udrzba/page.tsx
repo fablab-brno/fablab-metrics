@@ -7,6 +7,12 @@ import {
 } from "fablab-metrics/components/maintenance/DowntimeCharts";
 import { MaintenanceSummary } from "fablab-metrics/components/maintenance/MaintenanceSummary";
 import { OutagesTable } from "fablab-metrics/components/maintenance/OutagesTable";
+import {
+  CategoryStatusTable,
+  PerceivedByCategory,
+  PerceivedByState,
+  PerceivedSummary,
+} from "fablab-metrics/components/maintenance/PerceivedAvailability";
 import { SectionHeading } from "fablab-metrics/ui/SectionHeading";
 
 export const metadata = {
@@ -16,6 +22,18 @@ export const metadata = {
 export default function MaintenancePage() {
   return (
     <main className="container mx-auto p-4">
+      <SectionHeading>Co členové najdou při příchodu</SectionHeading>
+      <PerceivedSummary />
+
+      <SectionHeading>Stav kategorií teď</SectionHeading>
+      <CategoryStatusTable />
+
+      <SectionHeading>Příchody podle stavu strojů</SectionHeading>
+      <PerceivedByState />
+
+      <SectionHeading>Příchody s omezením podle kategorie</SectionHeading>
+      <PerceivedByCategory />
+
       <SectionHeading>Stav strojů</SectionHeading>
       <MaintenanceSummary />
 
