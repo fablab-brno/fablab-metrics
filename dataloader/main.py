@@ -24,6 +24,7 @@ from resources.extract import (
     extract_resources,
     extract_resource_logs,
     extract_resource_state_events,
+    extract_resource_training_courses,
 )
 from resources.transform import calculate_resource_usage, calculate_member_visits
 from resources.write import write_resources
@@ -101,6 +102,7 @@ if __name__ == "__main__":
     extract_tours_reservations_logs(date_start=date_start, date_end=date_end, lang="cs")
 
     extract_resources()
+    extract_resource_training_courses()
     # Disable/enable logs are few, so the whole history is fetched every run.
     # That also backfills databases created before these logs were collected.
     extract_resource_state_events(

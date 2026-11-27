@@ -51,6 +51,33 @@ def extract_resources():
         )
 
 
+def extract_resource_training_courses():
+    """Stores which training courses unlock each machine."""
+    with get_db() as db:
+        machine_ids = [
+            row["id"]
+            for row in db.execute(
+                "SELECT id FROM resources WHERE type = 'machine' AND state IN ('active', 'locked')"
+            ).fetchall()
+        ]
+
+    with FabmanSession() as s:
+        links = [
+            {"resource_id": resource_id, "training_course_id": course["id"]}
+            for resource_id in machine_ids
+            for course in s.list_resource_training_courses(resource_id)
+        ]
+
+    with get_db() as db:
+        db.execute("DELETE FROM resource_training_courses")
+        db.executemany(
+            """
+            INSERT INTO resource_training_courses (resource_id, training_course_id)
+            VALUES (:resource_id, :training_course_id)
+            """,
+            links,
+        )
+
 
 def extract_resource_state_events(date_start, date_end):
     """Stores resourceDisabled / resourceEnabled logs used for machine outages."""

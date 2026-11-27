@@ -116,6 +116,14 @@ class FabmanSession(Session):
             },
         )
 
+    @persist_to_file("list_resource_training_courses")
+    def list_resource_training_courses(self, resource_id):
+        """Training courses that unlock the resource (any one of them is enough)."""
+        yield from self.get_all_json(
+            "training-courses",
+            params={"resource": resource_id},
+        )
+
     @persist_to_file("list_training_courses")
     def list_training_courses(self):
         yield from self.get_all_json(

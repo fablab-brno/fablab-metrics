@@ -105,6 +105,17 @@ def get_db_connection():
         )
         """,
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_resource_state_events_id ON resource_state_events (id)",
+        # Training courses that unlock a resource in Fabman (any one is enough).
+        """
+        CREATE TABLE IF NOT EXISTS resource_training_courses(
+            resource_id integer,
+            training_course_id integer
+        )
+        """,
+        """
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_resource_training_courses
+        ON resource_training_courses (resource_id, training_course_id)
+        """,
     ]
 
     cursor = db.cursor()
