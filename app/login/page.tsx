@@ -1,9 +1,13 @@
-import { Input } from "@headlessui/react";
+import { Button, Input } from "@headlessui/react";
 import { login } from "fablab-metrics/auth/actions";
 import { redirect } from "next/navigation";
 import React from "react";
 
-export default function Page() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { error?: string };
+}) {
   const handleLogin = async (formData: FormData) => {
     "use server";
 
@@ -11,9 +15,7 @@ export default function Page() {
       password: (formData.get("password") as string) ?? "",
     });
 
-    if (isValid) {
-      redirect("/");
-    }
+    redirect(isValid ? "/" : "/login?error=1");
   };
   return (
     <div className="fixed inset-0 z-10 bg-black opacity-75">
@@ -24,8 +26,18 @@ export default function Page() {
             <Input
               name="password"
               type="password"
+              autoFocus
               className="mt-3 block w-full rounded-lg border border-gray-800 py-1.5 px-3 text-sm"
             />
+            {searchParams.error && (
+              <p className="mt-2 text-sm text-red-600">Nesprávné heslo.</p>
+            )}
+            <Button
+              type="submit"
+              className="mt-3 w-full rounded-lg bg-red-500 py-1.5 px-3 text-sm font-semibold text-white hover:bg-red-600"
+            >
+              Přihlásit
+            </Button>
           </form>
         </div>
       </div>
