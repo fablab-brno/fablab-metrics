@@ -32,6 +32,11 @@ from resources.maintenance import (
     calculate_machine_downtime_by_category,
     write_machine_status,
 )
+from resources.perceived import (
+    calculate_perceived_availability,
+    calculate_perceived_availability_by_category,
+    write_perceived_status,
+)
 
 from tours.extract import extract_tours_reservations_logs, extract_members_emails
 from tours.transform import calculate_tours_members_ratios_and_counts, get_info_from_of_tours
@@ -110,6 +115,7 @@ if __name__ == "__main__":
     write_training_courses()
     write_resources()
     write_machine_status()
+    write_perceived_status()
     write_tours_sources()
 
     with open(os.path.join(settings.data_path, "status.json"), "w") as jsonfile:
@@ -133,6 +139,8 @@ if __name__ == "__main__":
         # Machine maintenance
         "machine_downtime": calculate_machine_downtime,
         "machine_downtime_by_category": calculate_machine_downtime_by_category,
+        "perceived_availability": calculate_perceived_availability,
+        "perceived_availability_by_category": calculate_perceived_availability_by_category,
         # Trainings
         "trainings_by_date": calculate_trainings_by_date,
         "trainings_by_member": calculate_trainings_by_member,
