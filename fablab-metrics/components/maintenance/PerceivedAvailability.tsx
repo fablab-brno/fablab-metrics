@@ -94,10 +94,11 @@ export function PerceivedSummary() {
       </div>
       <p className="text-xs text-gray-500 mt-2">
         Pro každý příchod do dílny (první průchod vstupem za den) se vezmou
-        kategorie strojů, na které má člen školení (kromě BOZP). Příchod dostane
-        nejhorší stav z těchto kategorií. Kategorie je omezená, když funguje
-        méně strojů, než kolik jich obvykle běží současně (90. percentil při
-        příchodech za posledních 180 dní).
+        kategorie strojů, které člen smí používat (má některé ze školení, která
+        stroj ve Fabmanu odemykají). Příchod dostane nejhorší stav z těchto
+        kategorií. Kategorie je omezená, když funguje méně strojů, než kolik
+        jich obvykle běží současně (90. percentil při příchodech za posledních
+        180 dní).
       </p>
     </>
   );

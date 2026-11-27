@@ -2,8 +2,9 @@
 Perceived machine availability: what a member finds when they come to the lab.
 
 For every visit (first entrance check-in of a member per day) we take the
-machine categories the member is trained on (except BOZP) and the state of
-each category at check-in time:
+categories of machines the member is trained on (holds any of the training
+courses that unlock the machine in Fabman) and the state of each category at
+check-in time:
 
 - "ok": at least `threshold` machines of the category work,
 - "limited": some machines work, but fewer than `threshold`,
@@ -35,7 +36,6 @@ settings = get_settings()
 
 DEMAND_PERCENTILE = 0.9
 DEMAND_WINDOW = timedelta(days=180)
-EXCLUDED_TRAINING_CATEGORIES = {"", "BOZP"}
 
 STATES = ("ok", "limited", "unavailable")
 
@@ -199,7 +199,7 @@ def _load_categories(now):
 
 
 def _load_visits(categories):
-    """First entrance check-in per member and day, with categories the member was trained on by then."""
+    """First entrance check-in per member and day, with machine categories the member was trained on by then."""
     with get_db() as db:
         checkins = db.execute(
             """
@@ -211,19 +211,19 @@ def _load_visits(categories):
         ).fetchall()
         trainings = db.execute(
             """
-            SELECT t.member_id, t.date, tc.category
+            SELECT DISTINCT t.member_id, t.date, r.category
             FROM trainings AS t
-            JOIN training_courses AS tc ON tc.id = t.training_id
-            WHERE COALESCE(tc.level, '') != 'bozp'
+            JOIN resource_training_courses AS rtc ON rtc.training_course_id = t.training_id
+            JOIN resources AS r ON r.id = rtc.resource_id
+            WHERE r.type = 'machine'
             """
         ).fetchall()
 
     trained = {}
     for row in trainings:
-        category = row["category"] or ""
-        if category in EXCLUDED_TRAINING_CATEGORIES or category not in categories:
+        if row["category"] not in categories:
             continue
-        trained.setdefault(row["member_id"], []).append((_parse(row["date"]), category))
+        trained.setdefault(row["member_id"], []).append((_parse(row["date"]), row["category"]))
 
     first_per_day = {}
     for row in checkins:
