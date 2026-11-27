@@ -34,10 +34,10 @@ Machine maintenance metrics (tab "Údržba strojů") are reconstructed from Fabm
 history of these logs is fetched on every dataloader run. Only resources with `METRICS_EQUIPMENT_TYPE=machine` count.
 
 Perceived machine availability (tab "Údržba strojů") answers what a member finds when they come to the lab. Each visit
-(first entrance check-in of a member per day) gets the worst state of the machine categories the member is trained on
-(training course `METRICS_CATEGORY`, BOZP excluded): `ok`, `limited` (fewer machines work than usually run at the same
-time, i.e. the 90th percentile of concurrent use at check-ins during the previous 180 days) or `unavailable` (no machine
-of the category works). Training courses and machines are matched by `METRICS_CATEGORY`, so the names must be equal.
+(first entrance check-in of a member per day) gets the worst state of the categories of machines the member is trained
+on, i.e. holds any of the training courses that unlock the machine in Fabman: `ok`, `limited` (fewer machines work than
+usually run at the same time, i.e. the 90th percentile of concurrent use at check-ins during the previous 180 days) or
+`unavailable` (no machine of the category works).
 
 Training courses metrics are configured using following resource metadata:
 
